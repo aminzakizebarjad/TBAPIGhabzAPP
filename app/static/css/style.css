@@ -1,0 +1,91 @@
+
+    @import url('https://v1.fontapi.ir/css/IranNastaliq');
+
+    .font-nastaligh {
+        font-family: Iran Nastaliq, sans-serif;
+        font-size: 2rem;
+    }
+
+    @import url('https://v1.fontapi.ir/css/Lotus');
+    .font-nazanin {
+        font-family: Lotus, sans-serif;
+        font-size: 1.5rem;
+    }
+    .navbar-brand {
+      order: 2; /* Ensure brand is placed in the middle when expanded */
+    }
+    .navbar-toggler {
+      order: 1; /* Ensure toggler is on the left */
+    }
+
+    .custom-nav-tabs .nav-link {
+      border-color: red; /* Change border color of the tabs */
+
+    }
+
+    .custom-nav-tabs .nav-link.active {
+      border-color: green; /* Change border color of the active tab */
+      color: green;
+      background-color: cadetblue;
+    }
+
+    .custom-nav-tabs .nav-link:hover {
+      border-color: blue; /* Change border color on hover */
+    }
+
+    .centered-navbar-brand {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      color: forestgreen;
+    }
+
+    .form-itself{
+        align-content: center;
+
+    }
+    .centered-form-object {
+        text-align: center;
+        border: 2px solid darkmagenta;
+        border-radius: 4px;
+        width: 50%;
+        background-color: whitesmoke;
+        margin-bottom: 7px;
+        margin-top: 10px;
+        margin-left: 25%;
+
+    }
+
+    .centered-text{
+        text-align: center;
+    }
+
+    .sub-butt{
+        border: 2px solid darkmagenta;
+        background-color: #86989B;
+        color: black;
+        margin-left: 47%;
+    }
+
+    select:disabled{
+        color: #BFDDE0;
+        background-color: #15a6eb;
+        border-color: gray;
+        border-width: .5rem;
+    }
+
+    .error-div{
+        margin-top: 2rem;
+        text-align: center;
+        direction: rtl;
+        animation: blink 1.5s infinite;
+        animation-fill-mode: both;
+        color: #9C1A1C;
+        background-color: lightgoldenrodyellow;
+    }
+
+    @keyframes blink {
+       0% { opacity: 0 }
+       50% { opacity: 1 }
+       100% { opacity: 0 }
+       }

@@ -1,0 +1,94 @@
+{% extends "ABI_NEGAR_TEMPLATE.html" %}
+{% block title %}ارائه قبض {% endblock %}
+{% block style %}
+
+<!--persian callender-->
+{#    https://github.com/behzadi/persianDatepicker#}
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/persianDatepicker.css') }}" />
+    <script type="text/javascript" src="{{ url_for('static', filename='js/persianDatepicker.min.js') }}"></script>
+    <script type="text/javascript">
+    $(function() {
+        $("#telemetry_stop_date, #span1").persianDatepicker();
+    });
+
+    $(function() {
+        $("#telemetry_start_date, #span2").persianDatepicker();
+    });
+<!--persian callender end-->
+
+</script>
+{% endblock %}
+
+{% block form %}
+
+<!-- form -->
+{#    <div class="form-itself" >#}
+        <form> {#action="/calculate_meter" method="post" >#}
+
+          <select name="meter_kind_selection" id="meter_kind_selection" class="form-select centered-form-object font-nazanin" aria-label="Default select example" >
+          <option selected value="None">نوع کنتور را انتخاب کنید</option>
+          <option value="water">آب</option>
+          <option value="electricity">برق</option>
+          <option value="gas" disabled=true>گاز</option>
+            </select>
+
+
+        <select name="meter_place_selection" id="meter_place_selection" class="form-select centered-form-object font-nazanin" aria-label="Default select example" disabled="true" >
+          <option selected value="None">محل کنتور را انتخاب کنید</option>
+        </select>
+
+          <div class="mb-3 centered-form-object font-nazanin">
+            <label for="telemetry_start_date" class="form-label">تاریخ ابتدا</label>
+              <input name="start-date" type="text" class="form-control centered-text" id="telemetry_start_date" aria-describedby="start_data" placeholder="yyyy/mm/dd"/>
+              <span id="span2" align="center"></span>
+              <div id="start_data" class="form-text">تا ساعت 12 نیمه شب </div>
+          </div>
+
+
+          <div class="mb-3 centered-form-object font-nazanin">
+            <label for="telemetry_stop_date" class="form-label">تاریخ انتها</label>
+              <input name="stop-date" type="text" class="form-control centered-text" id="telemetry_stop_date" aria-describedby="stop_data" placeholder="yyyy/mm/dd"/>
+              <span id="span1" align="center"></span>
+              <div id="stop_data" class="form-text">تا ساعت 12 نیمه شب </div>
+          </div>
+
+            <div class="d-flex justify-content-center">
+              <button type="button" class="btn btn-primary" id="submit-butt">
+                  <span>Submit</span>
+{#                  <span role="status">Loading...</span>#}
+              </button>  {# never use type="submit" when using fetch API #}
+            </div>
+
+            <div class="d-flex justify-content-center">
+              <button type="button" class="btn btn-primary" id="spinner" hidden="true" disabled="true">
+                  <span class="spinner-grow spinner-border" ></span>
+{#                  <span role="status">Loading...</span>#}
+              </button>  {# never use type="submit" when using fetch API #}
+
+            </div>
+        </form>
+        <!--form-end-->
+{#</div>#}
+{#        <div class="d-flex justify-content-center">#}
+{#            <div class="spinner-grow text-primary " role="status" id="spinner">#}
+{#              <span class="visually-hidden">Loading...</span>#}
+{#            </div>#}
+{#        </div>#}
+
+        <div id="error-division" class="error-div font-nazanin">
+
+        </div>
+
+        <div id="error-start-time-division" class="error-div font-nazanin">
+
+            </div>
+        <div id="error-stop-time-division" class="error-div font-nazanin">
+
+            </div>
+
+        <div id="data-div" class="font-nazanin">
+
+            </div>
+
+        <script type="text/javascript" src="{{ url_for('static', filename='js/Tel_Page.js') }}"></script>
+{% endblock %}
