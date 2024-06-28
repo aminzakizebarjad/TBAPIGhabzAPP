@@ -1,5 +1,5 @@
 import time
-
+from .userPass import *
 from tb_rest_client.rest_client_ce import RestClientCE
 from tb_rest_client.models.models_ce.entity_id import EntityId
 from tb_rest_client.models.models_ce.customer_id import CustomerId

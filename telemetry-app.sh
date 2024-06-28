@@ -1,4 +1,11 @@
 #set -e
+
+read -p 'give Thingsboard username:' userName
+read -sp 'give Thingsboard password:' passWord
+user="yourThingsBoardUser = \"${userName}\""
+pass="yourThingsBoardPass = \"${passWord}\""
+echo $user >> app/userPass.py
+echo $pass >> app/userPass.py
 DIR=$(pwd)
 echo $DIR
 cd ..

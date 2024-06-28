@@ -1,0 +1,2 @@
+yourThingsBoardUser = ""
+yourThingsBoardPass = ""
