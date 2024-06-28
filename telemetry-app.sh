@@ -2,8 +2,10 @@
 
 read -p 'give Thingsboard username:' userName
 read -sp 'give Thingsboard password:' passWord
-user="yourThingsBoardUser = \"${userName}\""
+newLine="\n"
+user="\nyourThingsBoardUser = \"${userName}\""
 pass="yourThingsBoardPass = \"${passWord}\""
+echo $newLine >> app/userPass.py
 echo $user >> app/userPass.py
 echo $pass >> app/userPass.py
 DIR=$(pwd)
