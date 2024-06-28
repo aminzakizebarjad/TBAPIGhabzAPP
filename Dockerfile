@@ -3,7 +3,8 @@
 #
 #ENTRYPOINT ["top", "-b"]
 # TODO: create the requirement.txt by freezing python
-FROM docker.arvancloud.ir/python:3.11
+#FROM docker.arvancloud.ir/python:3.10-alpine
+FROM python:3.10-alpine
 
 WORKDIR /code
 
