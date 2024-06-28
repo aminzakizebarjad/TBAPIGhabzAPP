@@ -15,8 +15,8 @@ from typing import List, Dict, Optional
 # ThingsBoard REST API URL
 base_url = "http://172.20.2.74"
 # Default Tenant Administrator credentials
-username = "abicore@abinegar.com"
-password = "@Bi@bI"
+username = yourThingsBoardUser
+password = yourThingsBoardPass
 pageSizeParameter = 10
 aliveMinutesParameters = 20  # minutes until we say one device is not active
 epochDistanceToCheck = 15  # minutes from base epoch of a day to chech for data
