@@ -1,0 +1,29 @@
+# init requirements
+git+https://github.com/pypa/setuptools
+git+https://github.com/pypa/packaging
+# gunicorn and jdatetime
+git+https://github.com/benoitc/gunicorn.git
+git+https://github.com/slashmili/jalali-core
+git+https://github.com/slashmili/python-jalali
+# Flask and requirements
+git+https://github.com/pallets-eco/blinker
+git+https://github.com/pallets/click
+git+https://github.com/pallets/itsdangerous
+git+https://github.com/pallets/markupsafe
+git+https://github.com/pallets/jinja
+git+https://github.com/pallets/werkzeug
+git+https://github.com/pallets/flask
+# tb rest client and dependencies
+git+https://github.com/jawah/charset_normalizer
+git+https://github.com/kjd/idna
+git+https://github.com/certifi/python-certifi
+# urllib3 requires charset-normalizer, idna, python-certifi
+git+https://github.com/urllib3/urllib3
+# requests requires urllib3
+git+https://github.com/psf/requests
+git+https://github.com/dateutil/dateutil
+git+https://github.com/benjaminp/six
+git+https://github.com/jpadilla/pyjwt@2.6.0
+# TB rest client needs crtifi, six, setup-tools, urllib3, requests, python-datautil, pyjwt
+git+https://github.com/thingsboard/thingsboard-python-rest-client
+
