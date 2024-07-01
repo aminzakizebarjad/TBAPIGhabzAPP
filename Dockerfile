@@ -6,6 +6,9 @@
 FROM docker.arvancloud.ir/python:3.10-alpine
 #FROM python:3.10-alpine
 
+RUN apk update
+RUN apk add git
+
 WORKDIR /code
 
 #COPY ./requirements.txt /code/requirements.txt
