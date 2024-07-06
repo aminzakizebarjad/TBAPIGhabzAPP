@@ -1,5 +1,6 @@
 # init requirements
 git+https://github.com/pypa/setuptools
+git+https://github.com/pypa/flit
 git+https://github.com/pypa/packaging
 # gunicorn and jdatetime
 git+https://github.com/benoitc/gunicorn.git
