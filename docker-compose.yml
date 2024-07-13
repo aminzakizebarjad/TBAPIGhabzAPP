@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  ghabz_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: telapp
+    ports:
+      - "6000:80"
+    env_file:
+      - Ghabz.env

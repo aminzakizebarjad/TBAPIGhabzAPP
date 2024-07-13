@@ -9,14 +9,14 @@ from tb_rest_client.rest import ApiException
 from requests import post as APIPost
 from datetime import datetime
 from typing import List, Dict, Optional
-
+import os
 # API Section
 
 # ThingsBoard REST API URL
-base_url = "http://172.20.2.74"
+base_url = os.getenv("base_url", "http://172.20.2.74")
 # Default Tenant Administrator credentials
-username = yourThingsBoardUser
-password = yourThingsBoardPass
+username = os.getenv("yourThingsBoardUser")
+password = os.getenv("yourThingsBoardPass")
 pageSizeParameter = 10
 aliveMinutesParameters = 20  # minutes until we say one device is not active
 epochDistanceToCheck = 15  # minutes from base epoch of a day to chech for data

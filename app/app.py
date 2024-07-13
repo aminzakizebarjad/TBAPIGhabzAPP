@@ -3,9 +3,20 @@ from flask import redirect, url_for, render_template,request, jsonify
 from requests import get as API_GET
 from requests import post as API_POST
 from .util import jalali_string_to_time
+import os
 
+base_url_path = os.getenv("SCRIPT_NAME")
+if not base_url_path:
+    base_url_path = '/'
+    print('not found base path')
 app = Flask(__name__)
-
+app.config['APPLICATION_ROOT'] = base_url_path
+# print('base_url_path', base_url_path)
+# print('APPLICATION_ROOT', app.config.get('APPLICATION_ROOT'))
+# print('root_path', app.root_path)
+# print('static_url_path', app.static_url_path)
+# print('url_map', app.url_map)
+# print('template_folder', app.template_folder)
 @app.route('/')
 def hello_world():  # put application's code here
 
