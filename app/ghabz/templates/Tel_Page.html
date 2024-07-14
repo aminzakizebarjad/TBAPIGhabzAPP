@@ -4,8 +4,8 @@
 
 <!--persian callender-->
 {#    https://github.com/behzadi/persianDatepicker#}
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/persianDatepicker.css') }}" />
-    <script type="text/javascript" src="{{ url_for('static', filename='js/persianDatepicker.min.js') }}"></script>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('ghabz.static', filename='css/persianDatepicker.css') }}" />
+    <script type="text/javascript" src="{{ url_for('ghabz.static', filename='js/persianDatepicker.min.js') }}"></script>
     <script type="text/javascript">
     $(function() {
         $("#telemetry_stop_date, #span1").persianDatepicker();
@@ -89,6 +89,7 @@
         <div id="data-div" class="font-nazanin">
 
             </div>
-
-        <script type="text/javascript" src="{{ url_for('static', filename='js/Tel_Page.js') }}"></script>
+        <script>const meter_name_API_url = "{{ url_for('ghabz.meter_name_API') }}"</script>
+        <script>const get_meter_data_API_url = "{{ url_for('ghabz.get_meter_data_API') }}"</script>
+        <script type="text/javascript" src="{{ url_for('ghabz.static', filename='js/Tel_Page.js') }}"></script>
 {% endblock %}

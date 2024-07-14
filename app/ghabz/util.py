@@ -2,7 +2,6 @@ from datetime import datetime, timezone
 import re
 from typing import Optional
 import logging
-
 import jdatetime
 
 logging.basicConfig(level=logging.DEBUG,

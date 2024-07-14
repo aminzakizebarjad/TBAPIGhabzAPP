@@ -1,13 +1,8 @@
 import time
-from .userPass import *
 from tb_rest_client.rest_client_ce import RestClientCE
 from tb_rest_client.models.models_ce.entity_id import EntityId
 from tb_rest_client.models.models_ce.customer_id import CustomerId
-from tb_rest_client.models.models_ce.device_profile_id import DeviceProfileId
 import logging
-from tb_rest_client.rest import ApiException
-from requests import post as APIPost
-from datetime import datetime
 from typing import List, Dict, Optional
 import os
 # API Section

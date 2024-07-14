@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function() {
           meterNameSelect.disabled = false;
           const formData = new FormData();
           formData.append('meterKind', meterKind.value)
-          fetchWithForm('/meter_name_API', formData).then(result=>{
+          fetchWithForm(meter_name_API_url, formData).then(result=>{
               console.log(result)
               for (const opt of Object.keys(result))
               {
@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", function() {
         formData.append('meterName', meterName.value);
         formData.append('startTime', startTime.value);
         formData.append('endTime', endTime.value);
-        fetchWithForm("/get_meter_data_API",formData).then(response=>{
+        fetchWithForm(get_meter_data_API_url,formData).then(response=>{
             console.log(response);
             // submitButt.innerText = '';  // text is disappeared
             submitButt.hidden = false;  // text is disappeared
