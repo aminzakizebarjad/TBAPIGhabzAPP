@@ -10,3 +10,13 @@ services:
       - "6000:80"
     env_file:
       - Ghabz.env
+      -
+
+  haproxy:
+    image: docker.arvancloud.ir/haproxy:latest
+    depends_on:
+      - ghabz_app
+    ports:
+      - "80:80"
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
