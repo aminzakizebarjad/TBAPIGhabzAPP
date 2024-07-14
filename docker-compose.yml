@@ -10,7 +10,6 @@ services:
       - "6000:80"
     env_file:
       - Ghabz.env
-      -
 
   haproxy:
     image: docker.arvancloud.ir/haproxy:latest
