@@ -2,20 +2,31 @@ version: '3.8'
 
 services:
   ghabz_app:
+    image: telapp-slim
     build:
       context: .
       dockerfile: Dockerfile
-    image: telapp
     ports:
-      - "6000:80"
+      - "3000:80"
     env_file:
       - Ghabz.env
+    networks:
+      - flask-app
+    container_name: ghabz-app-tb
 
   haproxy:
     image: docker.arvancloud.ir/haproxy:latest
-    depends_on:
-      - ghabz_app
     ports:
       - "80:80"
     volumes:
       - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    networks:
+      - flask-app
+
+networks:
+  flask-app:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.14.0.0/16
+          ip_range: 172.14.5.0/24
