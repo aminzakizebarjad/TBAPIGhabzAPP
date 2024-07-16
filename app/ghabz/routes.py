@@ -32,9 +32,12 @@ def get_meter_data_API():
     meter_name = request.form.get('meterName')
     start_time = request.form.get('startTime')
     stop_time = request.form.get('endTime')
-    print(meter_name,meter_kind,start_time,stop_time)
+    clk_EN = request.form.get('clkEN')
+    start_clock = request.form.get('startClock')
+    stop_clock = request.form.get('stopClock')
+    print(meter_name,meter_kind,start_time,stop_time,clk_EN,start_clock,stop_clock)
 
-    # TODO: add some data to say if we can access to API
+    # TODO: add some data to say if we can access to API else return error to service in front
     # login to API
     rest_client = RestClientCE(base_url=base_url)
     rest_client.login(username=username, password=password)
@@ -71,10 +74,38 @@ def get_meter_data_API():
         meter_data_return_dict.update({'isAlive':isAlive})
         # print('checking is alive', meter_data_return_dict)
 
+    meter_data_return_dict.update({'error-start-clock': False})
+    meter_data_return_dict.update({'error-stop-clock': False})
+    raisedStartEpoch = 0
+    raisedStopEpoch = 0
+    if clk_EN:
+        colonOcurrClockStart = str(start_clock).count(':')
+        colonOcurrClockStop = str(start_clock).count(':')
+        if colonOcurrClockStart == 1:
+            startClockList = str(start_clock).split(':')
+            try:
+                raisedStartEpoch = (int(startClockList[0]) * 60 + int(startClockList[1])) * 60
+            except:
+                meter_data_return_dict.update({'error-start-clock': true})
+
+        if colonOcurrClockStop == 1:
+            stopClockList = str(stop_clock).split(':')
+            try:
+                raisedStopEpoch = (int(stopClockList[0]) * 60 + int(stopClockList[1])) * 60
+            except:
+                meter_data_return_dict.update({'error-stop-clock': true})
 
     # see if the Dates are valid
     start_epoch = jalali_string_to_time(start_time)
     stop_epoch = jalali_string_to_time(stop_time)
+
+    print('start epoch bef:', start_epoch)
+
+    start_epoch = start_epoch + raisedStartEpoch
+    stop_epoch = stop_epoch + raisedStopEpoch
+
+    print('start epoch aft:', start_epoch)
+
     print('epoch:' ,start_epoch)
     meter_data_return_dict.update({'error-start-time': None})
     if not start_epoch:
@@ -100,11 +131,21 @@ def get_meter_data_API():
     if meter_kind_approved and meter_name_approved and start_epoch and stop_epoch and start_epoch < stop_epoch:
 
         #get nearest data to start epoch
+        from .APITB import epochDistanceToCheck, maxBoundaryTSRetry
+
+        if clk_EN:
+            epochDistanceToCheck = 1  # 1 minutes each query
+            maxBoundaryTSRetry = .1  # .1*60 = 6 minutes
+
+        print('maxBoundaryTSRetry, ',epochDistanceToCheck, maxBoundaryTSRetry)
+
         time_in_data_available_start = decor_get_nearest_time_epoch(restClient=rest_client,
                                                                     deviceName=meter_name_approved[1],
                                                                     date=start_epoch,  # TODO: change it to string time or other functions
                                                                     key_to_ask_for_nearest=meter_name_approved[2],
-                                                                    from_epoch=True)
+                                                                    from_epoch=True,
+                                                                    epochDistanceToCheckInner=epochDistanceToCheck,
+                                                                    maxBoundaryTSRetryInner=maxBoundaryTSRetry)
 
         if not time_in_data_available_start:
             meter_data_return_dict.update({'error-time-start-avlbl': True})
@@ -114,7 +155,9 @@ def get_meter_data_API():
                                                                     deviceName=meter_name_approved[1],
                                                                     date=stop_epoch,  # TODO: change it to string time or other functions
                                                                     key_to_ask_for_nearest=meter_name_approved[2],
-                                                                    from_epoch=True)
+                                                                    from_epoch=True,
+                                                                    epochDistanceToCheckInner=epochDistanceToCheck,
+                                                                    maxBoundaryTSRetryInner=maxBoundaryTSRetry)
         if not time_in_data_available_stop:
             meter_data_return_dict.update({'error-time-stop-avlbl': True})
         print('here', meter_data_return_dict)
@@ -133,11 +176,11 @@ def get_meter_data_API():
 
             data.update({'available': True})
             if meter_kind == 'water':
-                data.update({"telemetry-diff": data_end_decode-data_start_decode})
+                data.update({"telemetry-diff": round(data_end_decode-data_start_decode,3)})
                 # print(data_end.get())
                 data.update({'unit': 'متر مکعب'})
             elif meter_kind == 'electricity':
-                data.update({"telemetry-diff": (data_end_decode - data_start_decode)*meter_name_approved[3]})
+                data.update({"telemetry-diff": round((data_end_decode - data_start_decode)*meter_name_approved[3],3)})
                 # print(data_end)
                 data.update({'unit': 'کیلو وات ساعت'})
 

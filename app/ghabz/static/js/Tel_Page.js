@@ -23,6 +23,8 @@ document.addEventListener("DOMContentLoaded", function() {
         dataDive.hidden = true;
     }
 
+
+
     const errorDiv = document.getElementById("error-division");
     const startErrorDiv = document.getElementById("error-start-time-division");
     const stopErrorDiv = document.getElementById("error-stop-time-division");
@@ -33,8 +35,43 @@ document.addEventListener("DOMContentLoaded", function() {
     const meterName = document.getElementById("meter_place_selection");
     const startTime = document.getElementById("telemetry_start_date");
     const endTime = document.getElementById("telemetry_stop_date");
+    const clockCheckBox = document.getElementById("clockCheckBox");
+    const startDataDesc = document.getElementById("start_data");
+    const stopDataDesc = document.getElementById("stop_data");
+    const startClockDiv = document.getElementById("divStartClock");
+    startClockDiv.hidden = true;
+    const stopClockDiv = document.getElementById("divStopClock");
+    stopClockDiv.hidden = true;
+    const startClock = document.getElementById("telemetry_start_clock")
+    const stopClock = document.getElementById("telemetry_stop_clock")
     // meterKind.disabled = true;
 
+    var clockEN = false;
+    function enableClock(){
+        startDataDesc.hidden = true;
+        stopDataDesc.hidden = true;
+        startClockDiv.hidden = false;
+        stopClockDiv.hidden = false;
+        clockEN = true;
+    }
+
+    function disableClock(){
+        startDataDesc.hidden = false;
+        stopDataDesc.hidden = false;
+        startClockDiv.hidden = true;
+        stopClockDiv.hidden = true;
+        clockEN = false;
+    }
+
+    clockCheckBox.addEventListener("change", function (){
+
+        if (clockCheckBox.checked){
+            enableClock();
+        }
+        else {
+            disableClock();
+        }
+    })
 
     console.log("DOM fully loaded and parsed");
 
@@ -58,7 +95,7 @@ document.addEventListener("DOMContentLoaded", function() {
         // if another option is selected from meterKind then we must remove the previously added options to meterNameSelect
         while(meterNameSelect.options.length>1)
         {
-            meterNameSelect.remove(1)
+            meterNameSelect.remove(1);
         }
 
       if (meterKind.value === "None"){
@@ -106,6 +143,15 @@ document.addEventListener("DOMContentLoaded", function() {
         formData.append('meterName', meterName.value);
         formData.append('startTime', startTime.value);
         formData.append('endTime', endTime.value);
+        // this if befor posting will prevent from scripting on fronend
+        formData.append('clkEN', clockEN)
+        if(clockEN==false){
+            startClock.value = null;
+            stopClock.value = null;
+
+        }
+        formData.append('startClock', startClock.value);
+        formData.append('stopClock', stopClock.value);
         fetchWithForm(get_meter_data_API_url,formData).then(response=>{
             console.log(response);
             // submitButt.innerText = '';  // text is disappeared

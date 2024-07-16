@@ -56,6 +56,17 @@
 
     }
 
+    .centered-checkbox-object {
+        text-align: center;
+        border: 2px solid darkmagenta;
+        border-radius: 4px;
+        width: 15%;
+        background-color: whitesmoke;
+        margin-bottom: 7px;
+        margin-top: 10px;
+        margin-left: 60%;
+
+    }
     .centered-text{
         text-align: center;
     }

@@ -14,8 +14,8 @@ username = os.getenv("yourThingsBoardUser")
 password = os.getenv("yourThingsBoardPass")
 pageSizeParameter = 10
 aliveMinutesParameters = 20  # minutes until we say one device is not active
-epochDistanceToCheck = 15  # minutes from base epoch of a day to chech for data
-maxBoundaryTSRetry = 12 # hours away from 12 A.M. to check if data exists
+epochDistanceToCheck = 15  # minutes from base epoch of a day to chech for data must be less  maxBoundaryTSRetry in minutes
+maxBoundaryTSRetry = 12 # hours away from 12 A.M. to check if data exists can be fraction of hour
 # print(base_url+APILogin)
 # x = APIPost(url=base_url+APILogin, json=JsonLogin, headers=HeaderLogin)
 # print(x.json())
@@ -208,9 +208,12 @@ from .util import string_to_time, dayEpochSwipper
 # we give them to nearest. each of which is not availble the output data will not contain any key related to that.
 # so always we can have the result with one of the below keys
 key_to_ask_for_nearest = 'M_P_0_0,M_P_1_0_frwd,D1f0'
-def get_nearest_time_epoch(restClient: RestClientCE, deviceName: str, date: str,key_to_ask_for_nearest: Optional[str],
+def get_nearest_time_epoch(restClient: RestClientCE, deviceName: str, date: str,
+                           maxBoundaryTSRetryInner:float,
+                           epochDistanceToCheckInner:int,
+                           key_to_ask_for_nearest: Optional[str],
                            backwards: bool = False,
-                           from_epoch:bool=False):
+                           from_epoch:bool=False, ):
     """
     :param restClient: the thingsboard client to work with
     :param deviceName: the device that we want to derive data for
@@ -225,10 +228,14 @@ def get_nearest_time_epoch(restClient: RestClientCE, deviceName: str, date: str,
 
     # epochDistanceToCheck  is entered in minutes so multiplication to 60 is needed,
     # maxBoundaryTSRetry is entered in hours so multilication to 60*60 is needed
-    epochSwipperClass = dayEpochSwipper(base_epoch=epochToCheck, swip_distance=epochDistanceToCheck*60,
-                                        max_swip=maxBoundaryTSRetry*60*60, backward=backwards)
+    epochDistanceToCheckInner = int(epochDistanceToCheckInner * 60)
+    maxBoundaryTSRetryInner = int(maxBoundaryTSRetryInner * 60 * 60)
+    if maxBoundaryTSRetryInner < epochDistanceToCheckInner:
+        maxBoundaryTSRetryInner = epochDistanceToCheckInner
+    epochSwipperClass = dayEpochSwipper(base_epoch=epochToCheck, swip_distance=epochDistanceToCheckInner,
+                                        max_swip=maxBoundaryTSRetryInner, backward=backwards)
     deviceEntity = get_device_entity_by_name(restClient=restClient, deviceName=deviceName)
-    epochDistanceToCheckms = epochDistanceToCheck * 60000  # swip distance to check is in minutes
+    epochDistanceToCheckms = int(epochDistanceToCheckInner * 1000)  # swip distance to check is in minutes
     # i = 0
     for swip in epochSwipperClass:
         # print(i, swip)
@@ -246,6 +253,8 @@ def get_nearest_time_epoch(restClient: RestClientCE, deviceName: str, date: str,
 
 
 def decor_get_nearest_time_epoch(restClient: RestClientCE, deviceName: str, date: str,
+                                maxBoundaryTSRetryInner = maxBoundaryTSRetry,
+                                epochDistanceToCheckInner = epochDistanceToCheck,
                                  key_to_ask_for_nearest:Optional[str]=key_to_ask_for_nearest, from_epoch:bool=False ):
     """
     do the exact thing that get_nearest_epoch_time does but in forward way first and backward
@@ -256,12 +265,16 @@ def decor_get_nearest_time_epoch(restClient: RestClientCE, deviceName: str, date
     :return: the nearest ts that has data to the input date
     """
     ts = get_nearest_time_epoch(restClient, deviceName, date, backwards=False,
+                                maxBoundaryTSRetryInner = maxBoundaryTSRetryInner,
+                                epochDistanceToCheckInner = epochDistanceToCheckInner,
                                 key_to_ask_for_nearest=key_to_ask_for_nearest, from_epoch=from_epoch)
     if ts:
         print("in forward")
         return ts
     else:
         ts = get_nearest_time_epoch(restClient, deviceName, date, backwards=True,
+                                    maxBoundaryTSRetryInner=maxBoundaryTSRetryInner,
+                                    epochDistanceToCheckInner=epochDistanceToCheckInner,
                                     key_to_ask_for_nearest=key_to_ask_for_nearest, from_epoch=from_epoch)
         print("in backward")
         return ts
