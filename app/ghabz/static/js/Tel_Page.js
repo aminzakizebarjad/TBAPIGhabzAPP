@@ -1,3 +1,13 @@
+async function scrollToBottom() {
+      await page.evaluate(async () => {
+      const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+      for (let i = 0; i < document.body.scrollHeight; i += 100) {
+        window.scrollTo(0, i);
+        await delay(100);
+      }
+    });
+  }
+
 async function fetchWithForm(link, formData) {
   try {
     const response = await fetch(link, {
@@ -160,34 +170,47 @@ document.addEventListener("DOMContentLoaded", function() {
 
             if(response['error-meter-kind']){
                 errorDiv.hidden = false;
-                errorDiv.innerText = 'می بایست یک نوع کنتور انتخاب کنید.'
+                errorDiv.innerText = 'می بایست یک نوع کنتور انتخاب کنید.';
             }
             else if (response['error-meter-name']){
                 errorDiv.hidden = false;
-                errorDiv.innerText = 'می بایست محل کنتور را تعیین کنید.'
+                errorDiv.innerText = 'می بایست محل کنتور را تعیین کنید.';
             }
             else if (response['error-start-time']){
                 errorDiv.hidden = false;
-                errorDiv.innerText = 'تاریخ ابتدای وارد شده صحیح نیست یا آن را وارد نکرده اید.'
+                errorDiv.innerText = 'تاریخ ابتدای وارد شده صحیح نیست یا آن را وارد نکرده اید.';
             }
             else if (response['error-stop-time']){
                 errorDiv.hidden = false;
-                errorDiv.innerText = 'تاریخ انتهای وارد شده صحیح نیست یا آن را وارد نکرده اید.'
+                errorDiv.innerText = 'تاریخ انتهای وارد شده صحیح نیست یا آن را وارد نکرده اید.';
             }
             else if (response['error-time-seq']){
                 errorDiv.hidden = false;
-                errorDiv.innerText = 'تاریخ انتها عقب تر از تاریخ ابتدا می باشد!'
+                errorDiv.innerText = 'تاریخ انتها عقب تر از تاریخ ابتدا می باشد!';
+            }
+            else if (!response['isAlive']){
+                errorDiv.hidden = false;
+                errorDiv.innerText = 'دستگاه مورد نظر فعال نیست، پشتیبانی را خبر کنید.';
             }
 
             if (response['error-time-start-avlbl']){
                 startErrorDiv.hidden = false;
-                startErrorDiv.innerText = 'در تاریخ ابتدا داده ای وجود ندارد.'
+                startErrorDiv.innerText = 'در تاریخ ابتدا داده ای وجود ندارد.';
+            }
+            else if(response['error-start-clock']){
+                startErrorDiv.hidden = false;
+                startErrorDiv.innerText = 'ساعت ابتدا صحیح وارد نشده است. پیشفرض 12 بامداد انتخاب شد.';
             }
 
             if (response['error-time-stop-avlbl']){
                 stopErrorDiv.hidden = false;
-                stopErrorDiv.innerText = 'در تاریخ انتها داده ای وجود ندارد.'
+                stopErrorDiv.innerText = 'در تاریخ انتها داده ای وجود ندارد.';
             }
+            else if(response['error-stop-clock']){
+                stopErrorDiv.hidden = false;
+                stopErrorDiv.innerText = ' ساعت انتها صحیح وارد نشده است. پیشفرض 12 بامداد انتخاب شد.';
+            }
+
 
             const avlbData = response['data']
             console.log(avlbData)
@@ -201,10 +224,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 dataDive.innerText = `مقدار مصرفی در این بازه ${avlbData['telemetry-diff']} ${avlbData['unit']} می باشد. `
                 // const telDiff = avlbData['telemetry-diff']
                 // const telUnit = avlbData['unit']
+
             }
         }).catch((e)=>{
             console.log(e);
         });
+        scrollToBottom();  // not working!
 
 
     });

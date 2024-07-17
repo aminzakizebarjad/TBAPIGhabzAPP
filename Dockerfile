@@ -14,7 +14,7 @@ WORKDIR /code
 #COPY ./requirements.txt /code/requirements.txt
 COPY ./requirements_from_source.txt /code/requirements.txt
 
-RUN pip3 install -r /code/rdocker equirements.txt
+RUN pip3 install -r /code/docker requirements.txt
 COPY ./app /code/app
 
 # run flask with gunicorn

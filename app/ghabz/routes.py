@@ -33,6 +33,10 @@ def get_meter_data_API():
     start_time = request.form.get('startTime')
     stop_time = request.form.get('endTime')
     clk_EN = request.form.get('clkEN')
+    if (str(clk_EN)  == 'true'):
+        clk_EN = True
+    else:
+        clk_EN = False
     start_clock = request.form.get('startClock')
     stop_clock = request.form.get('stopClock')
     print(meter_name,meter_kind,start_time,stop_time,clk_EN,start_clock,stop_clock)
@@ -78,62 +82,77 @@ def get_meter_data_API():
     meter_data_return_dict.update({'error-stop-clock': False})
     raisedStartEpoch = 0
     raisedStopEpoch = 0
-    if clk_EN:
+    if clk_EN == True:
+        print("in here to ask clock valid" )
         colonOcurrClockStart = str(start_clock).count(':')
         colonOcurrClockStop = str(start_clock).count(':')
         if colonOcurrClockStart == 1:
             startClockList = str(start_clock).split(':')
             try:
                 raisedStartEpoch = (int(startClockList[0]) * 60 + int(startClockList[1])) * 60
+                print(raisedStartEpoch)
             except:
-                meter_data_return_dict.update({'error-start-clock': true})
+                meter_data_return_dict.update({'error-start-clock': True})
+        else:
+            meter_data_return_dict.update({'error-start-clock': True})
 
         if colonOcurrClockStop == 1:
             stopClockList = str(stop_clock).split(':')
             try:
                 raisedStopEpoch = (int(stopClockList[0]) * 60 + int(stopClockList[1])) * 60
+                print(raisedStopEpoch)
             except:
-                meter_data_return_dict.update({'error-stop-clock': true})
+                meter_data_return_dict.update({'error-stop-clock': True})
+        else:
+            meter_data_return_dict.update({'error-stop-clock': True})
+
 
     # see if the Dates are valid
     start_epoch = jalali_string_to_time(start_time)
     stop_epoch = jalali_string_to_time(stop_time)
 
     print('start epoch bef:', start_epoch)
-
-    start_epoch = start_epoch + raisedStartEpoch
-    stop_epoch = stop_epoch + raisedStopEpoch
+    if not start_epoch == None:
+        start_epoch = start_epoch + raisedStartEpoch
+    if not stop_epoch == None:
+        stop_epoch = stop_epoch + raisedStopEpoch
 
     print('start epoch aft:', start_epoch)
 
     print('epoch:' ,start_epoch)
     meter_data_return_dict.update({'error-start-time': None})
-    if not start_epoch:
+    if start_epoch == None:
         # meter_data_return_dict.update({'error-start-time': 'فرمت تاریخ ابتدا صحیح نیست'})
         meter_data_return_dict.update({'error-start-time': True})
 
     meter_data_return_dict.update({'error-stop-time': None})
-    if not stop_epoch:
+    if stop_epoch == None:
         # meter_data_return_dict.update({'error-stop-time': 'فرمت تاریخ انتها صحیح نیست'})
         meter_data_return_dict.update({'error-stop-time': True})
 
-    meter_data_return_dict.update({'error-time': None})
-    if start_epoch and stop_epoch:
-        if not start_epoch < stop_epoch :
+    meter_data_return_dict.update({'error-time-seq': None})
+    time_approved = False
+    if ( not start_epoch == None) and ( not stop_epoch == None):
+        if (start_epoch > stop_epoch):
+            print(start_epoch, stop_epoch, )
             # meter_data_return_dict.update({'error-time': 'تاریخ ابتدا جلوتر از تاریخ انتها است.'})
             meter_data_return_dict.update({'error-time-seq': True})
+        else:
+            time_approved = True
 
     # start to query
     data = {'available': False}
     meter_data_return_dict.update({'error-time-start-avlbl': None})
     meter_data_return_dict.update({'error-time-stop-avlbl': None})
 
-    if meter_kind_approved and meter_name_approved and start_epoch and stop_epoch and start_epoch < stop_epoch:
+    if (not meter_kind_approved == None)\
+            and (not meter_name_approved == None)\
+            and (time_approved == True):
 
         #get nearest data to start epoch
         from .APITB import epochDistanceToCheck, maxBoundaryTSRetry
 
-        if clk_EN:
+        if clk_EN == True:
             epochDistanceToCheck = 1  # 1 minutes each query
             maxBoundaryTSRetry = .1  # .1*60 = 6 minutes
 
@@ -147,7 +166,7 @@ def get_meter_data_API():
                                                                     epochDistanceToCheckInner=epochDistanceToCheck,
                                                                     maxBoundaryTSRetryInner=maxBoundaryTSRetry)
 
-        if not time_in_data_available_start:
+        if time_in_data_available_start == 0:
             meter_data_return_dict.update({'error-time-start-avlbl': True})
 
         # get nearest data to stop epoch
@@ -158,12 +177,13 @@ def get_meter_data_API():
                                                                     from_epoch=True,
                                                                     epochDistanceToCheckInner=epochDistanceToCheck,
                                                                     maxBoundaryTSRetryInner=maxBoundaryTSRetry)
-        if not time_in_data_available_stop:
+        if time_in_data_available_stop == 0:
             meter_data_return_dict.update({'error-time-stop-avlbl': True})
+
         print('here', meter_data_return_dict)
         deviceEntity = get_device_entity_by_name(restClient=rest_client, deviceName=meter_name_approved[1])
 
-        if time_in_data_available_stop and time_in_data_available_start:  # check if data is available in such epochs
+        if (not time_in_data_available_stop ==0) and (not time_in_data_available_start == 0):  # check if data is available in such epochs
             data_start = rest_client.get_timeseries(entity_id=deviceEntity, keys=meter_name_approved[2],
                                              start_ts=time_in_data_available_start-1,
                                                    end_ts=time_in_data_available_start +1)
