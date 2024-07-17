@@ -1,7 +1,9 @@
+import os
+
 from flask import Blueprint
 from flask import render_template,request, jsonify
 from .util import jalali_string_to_time
-
+import sys
 ghabz_bp = Blueprint('ghabz', __name__, template_folder='templates', static_folder='static', url_prefix='/ghabz')
 
 @ghabz_bp.route('/')
@@ -110,6 +112,10 @@ def get_meter_data_API():
     # see if the Dates are valid
     start_epoch = jalali_string_to_time(start_time)
     stop_epoch = jalali_string_to_time(stop_time)
+
+    if sys.platform.startswith('linux'):
+        start_epoch = start_epoch - (3*60+30)*60
+        stop_epoch = stop_epoch - (3*60+30)*60
 
     print('start epoch bef:', start_epoch)
     if not start_epoch == None:
