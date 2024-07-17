@@ -113,15 +113,17 @@ def get_meter_data_API():
     start_epoch = jalali_string_to_time(start_time)
     stop_epoch = jalali_string_to_time(stop_time)
 
-    if sys.platform.startswith('linux'):
-        start_epoch = start_epoch - (3*60+30)*60
-        stop_epoch = stop_epoch - (3*60+30)*60
 
     print('start epoch bef:', start_epoch)
     if not start_epoch == None:
         start_epoch = start_epoch + raisedStartEpoch
+        if sys.platform.startswith('linux'):
+            start_epoch = start_epoch - (3 * 60 + 30) * 60
+
     if not stop_epoch == None:
         stop_epoch = stop_epoch + raisedStopEpoch
+        if sys.platform.startswith('linux'):
+            stop_epoch = stop_epoch - (3 * 60 + 30) * 60
 
     print('start epoch aft:', start_epoch)
 
