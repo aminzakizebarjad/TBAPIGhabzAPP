@@ -53,14 +53,14 @@ electricityKeeper = {'library':['کتابخانه', 'LIBRARY', 'M_P_0_0', 300],\
                      'physical-edu': ['آپا و تربیت بدنی', 'AmirKabir_Meter_G3', 'D1f0', 120],\
                      'civil-1':['عمران 1', 'AmirKabir_Meter_G4', 'D1f0', 120],\
                      'civil-2':['عمران 2', 'AmirKabir_Meter_G4', 'D1f10', 120],\
-                     'aerospace':['هوافضا', 'AmirKabir_Meter_G11', 'D1f10', 200],\
-                     'math':['ریاضی', 'AmirKabir_Meter_G11', 'D1f0', 120],\
+                     'aerospace':['هوافضا', 'AmirKabir_Meter_G1', 'D1f10', 200],\
+                     'math':['ریاضی', 'AmirKabir_Meter_G1', 'D1f0', 120],\
                      'nasaji-trans1':['نساجی ترانس 1', 'NASAJI', 'M_P_0_0', 500],\
                      'computer-2':['کامپیوتر 2', 'NASAJI', 'M_P_1_0', 120],\
                      'computer-1':['کامپیوتر 1', 'NASAJI', 'M_P_2_0', 240],\
                      'clinic':['بهداری', 'AmirKabir_Meter_G2', 'D1f0', 120],\
-                     'chem':['مهندسی شیمی', 'AmirKabir_Meter_G11', 'D1f20', 120],\
-                     'polymer':['مهندسی پلیمر', 'AmirKabir_Meter_G11', 'D1f30', 200],\
+                     'chem':['مهندسی شیمی', 'AmirKabir_Meter_G1', 'D1f20', 120],\
+                     'polymer':['مهندسی پلیمر', 'AmirKabir_Meter_G1', 'D1f30', 200],\
                      'metalorgy':['متالورژی', 'AmirKabir_Meter_G4', 'D1f40', 120],\
                      'informatic':['انفورماتیک', 'AmirKabir_Meter_G3', 'D1f30', 120],\
                      'mining':['معدن', 'AmirKabir_Meter_G4', 'D1f30', 200],\
@@ -75,11 +75,11 @@ electricityKeeper = {'library':['کتابخانه', 'LIBRARY', 'M_P_0_0', 300],\
                      'indust-1': ['صنایع 1', 'ELECTRICITY_INDUSTRIAL_ENG', 'M_P_0_0', 400],\
                      'indust-2': ['صنایع 2', 'ELECTRICITY_INDUSTRIAL_ENG', 'M_P_1_0', 200],\
                      'biomedic':['مهندسی پزشکی', 'ELECTRICITY_BIOMEDICAL_ENG_1', 'M_P_0_0', 200],\
-                     'biomedic-boiler':['مهندسی پزشکی موتورخانه', 'ELECTRICITY_BIOMEDICAL_ENG_3', 'M_P_0_0', 160],\
+                     'biomedic-boiler':['مهندسی پزشکی موتورخانه', 'ELECTRICITY_BIOMEDIACL_ENG_3', 'M_P_0_0', 160],\
                      'chem-ind':['مدیریت-شیمی مستقل', 'ELECTRICITY_CHEM_INDEPENDENT', 'M_P_0_0', 200],\
                      'ibn-sina':['ابن سینا', 'ELECTRICITY_BIOMEDICAL_ENG_2', 'M_P_0_0', 200],\
                      'nahad':['نهاد رهبری','ELECTRICITY_NAHAD', 'M_P_0_0', 60], \
-                     'ghalamchi': ['خوابگاه قلمچی', 'AmirKabir_Meter_G11', 'D2f20', 60]
+                     'ghalamchi': ['خوابگاه قلمچی', 'AmirKabir_Meter_G1', 'D2f20', 60]
                      }
 gasKeeper = {}
 wholeKeeeper = {'water':waterKeeper, 'electricity':electricityKeeper, 'natural-gas':gasKeeper}
@@ -186,20 +186,20 @@ def get_device_entity_by_name(restClient: RestClientCE, deviceName: str) -> Enti
     except ValueError:
         logging.error("%s does not exist in devices", deviceName)
 
-def get_device_alive(restClient: RestClientCE, deviceName: str):
-    try:
-        device_dict = get_device_name_id_dict(restClient)
-        entity_id = EntityId(id=device_dict.get(deviceName), entity_type='DEVICE')
-        latestTimeSeries = restClient.get_latest_timeseries(entity_id)
-        # print(latestTimeSeries)
-        key1 = list(latestTimeSeries.keys())[0]
-        latestTS = latestTimeSeries.get(key1)[0].get("ts")
-        aliveBoundary = int(time.time()) - aliveMinutesParameters*60
-
-        return aliveBoundary < int(latestTS/1000)
-
-    except ValueError:
-        logging.error("%s does not exist in devices", deviceName)
+# def get_device_alive(restClient: RestClientCE, deviceName: str):
+#     try:
+#         device_dict = get_device_name_id_dict(restClient)
+#         entity_id = EntityId(id=device_dict.get(deviceName), entity_type='DEVICE')
+#         latestTimeSeries = restClient.get_latest_timeseries(entity_id)
+#         # print(latestTimeSeries)
+#         key1 = list(latestTimeSeries.keys())[0]
+#         latestTS = latestTimeSeries.get(key1)[0].get("ts")
+#         aliveBoundary = int(time.time()) - aliveMinutesParameters*60
+#
+#         return aliveBoundary < int(latestTS/1000)
+#
+#     except ValueError:
+#         logging.error("%s does not exist in devices", deviceName)
 
 from .util import string_to_time, dayEpochSwipper
 # the date will come from a form in html

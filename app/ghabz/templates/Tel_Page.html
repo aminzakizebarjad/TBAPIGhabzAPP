@@ -71,17 +71,27 @@
           <option value="gas" disabled=true>گاز</option>
             </select>
 
-
-        <select name="meter_place_selection" id="meter_place_selection" class="form-select centered-form-object font-nazanin" aria-label="Default select example" disabled="true" >
-          <option selected value="None">محل کنتور را انتخاب کنید</option>
-        </select>
+          <div class="form-check form-switch centered-checkbox-object checkbox-num-two font-nazanin">
+              <input class="form-check-input" type="checkbox" value="" id="singlechoosingCheckBox">
+              <label class="form-check-label" for="singlechoosingBox">
+                فعال نمودن تک به تک
+              </label>
+          </div>
 
           <div class="form-check form-switch centered-checkbox-object font-nazanin">
-            <input class="form-check-input" type="checkbox" value="" id="clockCheckBox">
-            <label class="form-check-label" for="clockCheckBox">
-              فعال نمودن ساعت
-            </label>
+              <input class="form-check-input" type="checkbox" value="" id="clockCheckBox">
+              <label class="form-check-label" for="clockCheckBox">
+                فعال نمودن ساعت
+              </label>
           </div>
+
+
+
+          <select name="meter_place_selection" id="meter_place_selection" class="form-select centered-form-object font-nazanin" aria-label="Default select example" disabled="true" >
+            <option selected value="None">محل کنتور را انتخاب کنید</option>
+          </select>
+
+
 
           <div class="mb-3 centered-form-object font-nazanin">
             <label for="telemetry_start_date" class="form-label">تاریخ ابتدا</label>
@@ -147,8 +157,35 @@
 
             </div>
 
+        <div id="my-table-for-all">
+            <table class="table table-striped" >
+                <thead id="all_meter_places_table">
+                  <tr  class="bg-info">
+
+                    <th scope="col" class="font-nazanin">محل کنتور</th>
+                    <th scope="col" class="font-nazanin" id="heading2"> </th>
+                  </tr>
+                </thead>
+                <tbody  id="all_meter_places_table2">
+
+                </tbody>
+            </table>
+        </div>
+{#chart#}
+        <div id="chart-container">
+            <canvas id="myLineChart" class="chart-canvas"></canvas>
+        </div>
+
+
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+        <script src="scripts.js"></script>
+{#if you dont need any charts in the website delete or comment the part above#}
 
         <script>const meter_name_API_url = "{{ url_for('ghabz.meter_name_API') }}"</script>
         <script>const get_meter_data_API_url = "{{ url_for('ghabz.get_meter_data_API') }}"</script>
-        <script type="text/javascript" src="{{ url_for('ghabz.static', filename='js/Tel_Page.js') }}"></script>
+        <script>const get_all_meter_data_API_url = "{{ url_for('ghabz.get_all_meter_data_API') }}"</script>
+         <script type="text/javascript" src="{{ url_for('ghabz.static', filename='js/Tel_Page.js') }}"></script>
 {% endblock %}
