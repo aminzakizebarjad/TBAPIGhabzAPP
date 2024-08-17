@@ -323,7 +323,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 console.log(sortedData);
                 // console.log(sortedLabels);
-
+                if (concatenatedList.length <= 1) {
+                    return; // Exit the function to prevent chart rendering
+                }
 
                 // Render the chart
                 const ctx = document.getElementById('myLineChart').getContext('2d');

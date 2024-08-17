@@ -139,6 +139,149 @@
         background-color: lightgoldenrodyellow;
     }
 
+    .choosing-butt{
+        text-align: center;
+        border: 2px solid darkmagenta;
+        border-radius: 4px;
+        background-color: bisque;
+        margin-bottom: 0.25cm;
+        margin-top: 0.25cm;
+        margin-right: 0.1%;
+        margin-left: 0.5%;
+    }
+
+    .next-page-butt{
+        text-align: center;border: 2px solid darkmagenta;
+        border-radius: 4px;
+        background-color: bisque;
+        margin-bottom: 0.25cm;
+        margin-top: 0.25cm;
+        margin-left: 91.5%;
+    }
+    .formContainer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        margin: 20px 0;
+    }
+
+    .meterSelect {
+        width: 300px; /* Increased width */
+        height: 50px; /* Increased height */
+        font-size: 18px; /* Increased font size */
+        padding: 10px;
+        border-radius: 10px;
+        border: solid 3px rgba(54, 162, 235, 1); /* Border similar to chart boxes */
+        background-color: white; /* Set background to white */
+        color: #333; /* Dark text color */
+        margin-right: 10px; /* Space between select and submit button */
+    }
+
+    .submitButton {
+        background-color: white; /* Same color as background */
+        color: black; /* Dark text color for visibility */
+        border: solid 3px rgba(54, 162, 235, 1); /* Border similar to chart boxes */
+        padding: 10px 20px;
+        font-size: 18px;
+        cursor: pointer;
+        border-radius: 10px; /* Same border radius as meterSelect */
+    }
+
+    .chartContainer {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); /* 3 charts per row */
+        gap: 10px; /* Gap between charts */
+        justify-items: center;
+        /* Removed background-color to default to white or browser default */
+        padding: 20px;
+        margin-bottom: 20px; /* Space for pagination controls */
+    }
+
+    .chartRowTitle {
+        grid-column: span 3; /* Title spans across all columns */
+        text-align: center;
+        font-size: 18px;
+        margin: 20px 0 10px 0; /* Margin around the title */
+        color: darkblue; /* Dark blue color for the titles */
+    }
+
+    .chartBox {
+        width: 450px; /* Increased width */
+        height: 550px; /* Increased height */
+        padding: 20px;
+        border-radius: 20px;
+        border: solid 3px rgba(54, 162, 235, 1);
+        background: white;
+        margin: 5px; /* Margin around each chart box */
+    }
+
+    .pagination {
+        text-align: center;
+        /* Removed background-color to default to white or browser default */
+        padding: 10px;
+    }
+
+    .pagination button {
+        background-color: #1A1A1A;
+        color: rgba(54, 162, 235, 1);
+        border: none;
+        padding: 10px 20px;
+        margin: 0 5px;
+        cursor: pointer;
+    }
+    .deviceSquare {
+        width: 150px;  /* Width of each square */
+        height: 150px; /* Height of each square */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        border: 6px solid #333333; /* Border color and thickness */
+        background-color: #f0f0f0;
+        margin: 15px; /* Margin around each square */
+        cursor: pointer;
+        transition: border-color 0.3s, box-shadow 0.3s, opacity 0.3s;
+        font-size: 20px; /* Font size for text inside the square */
+        font-weight: bold;
+        border-radius: 20px; /* Rounded corners */
+        opacity: 0.5; /* Initial faded state */
+    }
+
+    .deviceSquare.active {
+        /*background-color: greenyellow;*/
+        border-color: #28a745; /* Green border for active devices */
+        box-shadow: 0 0 30px rgba(40, 167, 69, 0.7); /* Glowing effect */
+        opacity: 1; /* Full opacity for active devices */
+        color: #28a745;
+        /*text-shadow: 0 0 10px rgba(40, 167, 69, 0.7);*/
+    }
+
+    .deviceContainer {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); /* Four columns */
+        gap: 15px; /* Gap between the squares */
+        justify-items: center;
+        display: none; /* Initially hidden */
+    }
+    /* Keyframes for continuous hover animation */
+    @keyframes hoverPulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.1); /* Zoom in */
+        }
+        100% {
+            transform: scale(1); /* Back to original size */
+        }
+    }
+    /* Apply animation only to active device squares on hover */
+    .deviceSquare.active:hover {
+        animation: hoverPulse 0.8s infinite ease-in-out;
+    }
+
+
     @keyframes blink {
        0% { opacity: 0 }
        50% { opacity: 1 }
