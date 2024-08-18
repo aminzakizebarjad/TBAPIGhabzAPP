@@ -186,20 +186,20 @@ def get_device_entity_by_name(restClient: RestClientCE, deviceName: str) -> Enti
     except ValueError:
         logging.error("%s does not exist in devices", deviceName)
 
-# def get_device_alive(restClient: RestClientCE, deviceName: str):
-#     try:
-#         device_dict = get_device_name_id_dict(restClient)
-#         entity_id = EntityId(id=device_dict.get(deviceName), entity_type='DEVICE')
-#         latestTimeSeries = restClient.get_latest_timeseries(entity_id)
-#         # print(latestTimeSeries)
-#         key1 = list(latestTimeSeries.keys())[0]
-#         latestTS = latestTimeSeries.get(key1)[0].get("ts")
-#         aliveBoundary = int(time.time()) - aliveMinutesParameters*60
-#
-#         return aliveBoundary < int(latestTS/1000)
-#
-#     except ValueError:
-#         logging.error("%s does not exist in devices", deviceName)
+def get_device_alive(restClient: RestClientCE, deviceName: str):
+    try:
+        device_dict = get_device_name_id_dict(restClient)
+        entity_id = EntityId(id=device_dict.get(deviceName), entity_type='DEVICE')
+        latestTimeSeries = restClient.get_latest_timeseries(entity_id)
+        # print(latestTimeSeries)
+        key1 = list(latestTimeSeries.keys())[0]
+        latestTS = latestTimeSeries.get(key1)[0].get("ts")
+        aliveBoundary = int(time.time()) - aliveMinutesParameters*60
+
+        return aliveBoundary < int(latestTS/1000)
+
+    except ValueError:
+        logging.error("%s does not exist in devices", deviceName)
 
 from .util import string_to_time, dayEpochSwipper
 # the date will come from a form in html

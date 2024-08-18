@@ -155,6 +155,11 @@ document.addEventListener("DOMContentLoaded", function () {
     meterKind.addEventListener("change", function () {
         allmeterplacesTable.hidden = true;
         allmeterplacesTable2.hidden = true;
+        // Check if chart already exists and destroy it
+        if (myChart) {
+            myChart.destroy();
+        }
+
         if(meterKind.value == "water")
             heading2.innerHTML = ` مقدار مصرفی (متر مکعب)`;
         else if(meterKind.value == "electricity")
@@ -304,7 +309,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 // console.log(chartlabelsmain2);
                 console.log(concatenatedList);
                 // console.log(chartdatas);
-
+                if (concatenatedList.length <= 1) {
+                    return; // Exit the function and prevent chart rendering
+                }
 
 
                 // Combine labels and data, then sort

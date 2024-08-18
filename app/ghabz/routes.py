@@ -25,6 +25,8 @@ def isAlivePage():
 
     return render_template("Tel_Page3.html")
 
+def is_empty_dict(d):
+    return d is None or not d  # Check if dictionary is None or empty
 
 
 @ghabz_bp.post('/choose water')
@@ -128,8 +130,8 @@ def get_meter_data_API():
 
 
     # see if the Dates are valid
-    start_epoch = jalali_string_to_time(start_time)
-    stop_epoch = jalali_string_to_time(stop_time)
+    start_epoch, start_date_obj = jalali_string_to_time(start_time)
+    stop_epoch, stop_date_obj = jalali_string_to_time(stop_time)
 
 
     print('start epoch bef:', start_epoch)
@@ -245,300 +247,244 @@ def get_meter_data_API():
     print('here', meter_data_return_dict)
 
 
-    start_time_str = start_time.replace('/', '-')
-    stop_time_str = stop_time.replace('/', '-')
-    start_date = jdatetime.datetime.strptime(start_time_str, '%Y-%m-%d')
-    stop_date = jdatetime.datetime.strptime(stop_time_str, '%Y-%m-%d')
-    print(start_date, stop_date)
-    difference_date = (stop_date - start_date).days
-    days_counter = difference_date +1
-    print(f"Total number of days including both dates: {days_counter}")
-    days_separated = [start_date.strftime('%Y-%m-%d')];
 
-    next_day = start_date
-    for i in range(1, days_counter):
-        next_day += jdatetime.timedelta(days=1)
-        days_separated.append(next_day.strftime('%Y-%m-%d'))
+    if not (start_date_obj is None or stop_date_obj is None):
+        start_date = start_date_obj
+        stop_date = stop_date_obj
+        difference_date = (stop_date - start_date).days
+        days_counter = difference_date +1
+        print(f"Total number of days including both dates: {days_counter}")
+        days_separated = [start_date.strftime('%Y-%m-%d')];
 
-    print("Days separated:", days_separated)
-    meter_data_return_dict.update({'days_separated': days_separated}) # TODO: include unit and value to data
-    print('here', meter_data_return_dict)
+        next_day = start_date
+        for i in range(1, days_counter):
+            next_day += jdatetime.timedelta(days=1)
+            days_separated.append(next_day.strftime('%Y-%m-%d'))
 
-    fulldaysName = [ ' شنبه',' یکشنبه',' دوشنبه',' سه شنبه',' چهارشنبه',' پنج شنبه',' جمعه']
-    # daysName = [fulldaysName[start_date.weekday()]]
-    daysName = []
-    for day in days_separated:
-        day_date = jdatetime.datetime.strptime(day, '%Y-%m-%d')
-        daysName.append(fulldaysName[day_date.weekday()])
+        print("Days separated:", days_separated)
+        meter_data_return_dict.update({'days_separated': days_separated}) # TODO: include unit and value to data
+        print('here', meter_data_return_dict)
 
-    # print("Days name:", daysName)
-    meter_data_return_dict.update({'daysName': daysName})
-    # start_epd = jalali_string_to_time(days_separated[0])
-    # print('start_epd: ', start_epd)
-    # print('start_epoch: ', start_epoch)
+        fulldaysName = [ ' شنبه',' یکشنبه',' دوشنبه',' سه شنبه',' چهارشنبه',' پنج شنبه',' جمعه']
+        # daysName = [fulldaysName[start_date.weekday()]]
+        daysName = []
+        for day in days_separated:
+            day_date = jdatetime.datetime.strptime(day, '%Y-%m-%d')
+            daysName.append(fulldaysName[day_date.weekday()])
 
-    data_day1 = {'available': False}
-    stop_epoch_day1 = jalali_string_to_time(days_separated[0])
-    if (len(days_separated) > 1):
-        stop_epoch_day1 = jalali_string_to_time(days_separated[1])
-    if (not meter_kind_approved == None) \
-            and (not meter_name_approved == None) \
-            and (time_approved == True):
+        # print("Days name:", daysName)
+        meter_data_return_dict.update({'daysName': daysName})
+        # start_epd = jalali_string_to_time(days_separated[0])
+        # print('start_epd: ', start_epd)
+        # print('start_epoch: ', start_epoch)
 
-        from .APITB import epochDistanceToCheck, maxBoundaryTSRetry
+        data_day1 = {'available': False}
+        stop_epoch_day1, stop_date_day1 = jalali_string_to_time(days_separated[0])
+        if (len(days_separated) > 1):
+            stop_epoch_day1, stop_date_day1 = jalali_string_to_time(days_separated[1])
+        # if  (len(days_separated) > 2):
+        #     stop_epoch_day2, stop_date_day2 = jalali_string_to_time(days_separated[2])
+        if (not meter_kind_approved == None) \
+                and (not meter_name_approved == None) \
+                and (time_approved == True):
+
+            from .APITB import epochDistanceToCheck, maxBoundaryTSRetry
+
+            if clk_EN == True:
+                epochDistanceToCheck = 1  # 1 minutes each query
+                maxBoundaryTSRetry = .1  # .1*60 = 6 minutes
+
+            print('maxBoundaryTSRetry, ', epochDistanceToCheck, maxBoundaryTSRetry)
+            previous_epoch_day1 = start_epoch - 86400000
+            time_in_data_available_start_day1 = start_epoch * 1000
+            time_in_data_available_stop_day1 = stop_epoch_day1 * 1000
+            deviceEntity_day1 = get_device_entity_by_name(restClient=rest_client, deviceName=meter_name_approved[1])
+
+            data_start_day1 = rest_client.get_timeseries(entity_id=deviceEntity_day1, keys=meter_name_approved[2],
+                                                         start_ts=(previous_epoch_day1 * 1000),
+                                                         end_ts=time_in_data_available_start_day1)
+            data_end_day1 = rest_client.get_timeseries(entity_id=deviceEntity_day1, keys=meter_name_approved[2],
+                                                       start_ts=time_in_data_available_start_day1,
+                                                       end_ts=(time_in_data_available_stop_day1))
+            # print('lets see the data_start_day1: ', data_start_day1)
+            if is_empty_dict(data_end_day1) or is_empty_dict(data_start_day1):
+                data_day1.update({'available': False})
+                if meter_kind == 'water':
+                    data_day1.update({"telemetry-diff": 'no data'})
+                    # print(data_end.get())
+                    data_day1.update({'unit': 'متر مکعب'})
+                elif meter_kind == 'electricity':
+                    data_day1.update(
+                        {"telemetry-diff": 'no data'})
+                    # print(data_end)
+                    data_day1.update({'unit': 'کیلو وات ساعت'})
+            else:
+                data_start_decode_day1 = float(data_start_day1.get(meter_name_approved[2])[0].get('value'))
+                data_end_decode_day1 = float(data_end_day1.get(meter_name_approved[2])[0].get('value'))
+                data_day1.update({'available': True})
+                if meter_kind == 'water':
+                    data_day1.update({"telemetry-diff": round(data_end_decode_day1 - data_start_decode_day1, 3)})
+                    # print(data_end.get())
+                    data_day1.update({'unit': 'متر مکعب'})
+                elif meter_kind == 'electricity':
+                    data_day1.update(
+                        {"telemetry-diff": round((data_end_decode_day1 - data_start_decode_day1) * meter_name_approved[3], 3)})
+                    # print(data_end)
+                    data_day1.update({'unit': 'کیلو وات ساعت'})
+
+        DictData2 = {}
+        DictData2.update({'day 1': data_day1})
+
+        for k in range(1 , (len(days_separated) - 1)):
+            # start to query
+            previous_j = days_separated[k-1]
+            j = days_separated[k]
+            p = k + 1
+            next_j = days_separated[k+1]
+            data2 = {'available': False}
+            # meter_data_return_dict.update({'error-time-start-avlbl': None})
+            # meter_data_return_dict.update({'error-time-stop-avlbl': None})
+            pre_start_epd, pre_start_date_epd = jalali_string_to_time(previous_j)
+            start_epd,  start_date_epd= jalali_string_to_time(j)
+            stop_epd, stop_date_epd = jalali_string_to_time(next_j)
+            if (not meter_kind_approved == None) \
+                    and (not meter_name_approved == None) \
+                    and (time_approved == True):
+
+
+                from .APITB import epochDistanceToCheck, maxBoundaryTSRetry
+
+                if clk_EN == True:
+                    epochDistanceToCheck = 1  # 1 minutes each query
+                    maxBoundaryTSRetry = .1  # .1*60 = 6 minutes
+
+                print('maxBoundaryTSRetry, ', epochDistanceToCheck, maxBoundaryTSRetry)
+
+
+                time_in_data_available_start2 = start_epd * 1000
+                time_in_data_available_stop2 = stop_epd * 1000
+                deviceEntity2 = get_device_entity_by_name(restClient=rest_client, deviceName=meter_name_approved[1])
+
+                data_start2 = rest_client.get_timeseries(entity_id=deviceEntity2, keys=meter_name_approved[2],
+                                                         start_ts=(pre_start_epd * 1000),
+                                                         end_ts=time_in_data_available_start2)
+                data_end2 = rest_client.get_timeseries(entity_id=deviceEntity2, keys=meter_name_approved[2],
+                                                       start_ts=time_in_data_available_start2,
+                                                       end_ts=time_in_data_available_stop2)
+
+                if is_empty_dict(data_start2) or is_empty_dict(data_start2):
+                    data2.update({'available': False})
+                    if meter_kind == 'water':
+                        data2.update({"telemetry-diff": 'no data'})
+                        # print(data_end.get())
+                        data2.update({'unit': 'متر مکعب'})
+                    elif meter_kind == 'electricity':
+                        data2.update(
+                            {"telemetry-diff": 'no data'})
+                        # print(data_end)
+                        data2.update({'unit': 'کیلو وات ساعت'})
+                    # meter_data_return_dict.update({'error-time-stop-avlbl': True})
+                else:
+                    data_start_decode2 = float(data_start2.get(meter_name_approved[2])[0].get('value'))
+                    data_end_decode2 = float(data_end2.get(meter_name_approved[2])[0].get('value'))
+
+                    data2.update({'available': True})
+                    if meter_kind == 'water':
+                        data2.update({"telemetry-diff": round(data_end_decode2 - data_start_decode2, 3)})
+                        # print(data_end.get())
+                        data2.update({'unit': 'متر مکعب'})
+                    elif meter_kind == 'electricity':
+                        data2.update(
+                            {"telemetry-diff": round((data_end_decode2 - data_start_decode2) * meter_name_approved[3], 3)})
+                        # print(data_end)
+                        data2.update({'unit': 'کیلو وات ساعت'})
+
+            DictData2.update({f'day {p}' : data2})
 
         if clk_EN == True:
-            epochDistanceToCheck = 1  # 1 minutes each query
-            maxBoundaryTSRetry = .1  # .1*60 = 6 minutes
+            data_lastday = {'available': False}
+            start_epoch_lastday, start_date_lastday = jalali_string_to_time(days_separated[-1])
+            pre_start_epoch_lastday= start_epoch_lastday - 86400000
+            if (not meter_kind_approved == None) \
+                    and (not meter_name_approved == None) \
+                    and (time_approved == True):
 
-        print('maxBoundaryTSRetry, ', epochDistanceToCheck, maxBoundaryTSRetry)
+                from .APITB import epochDistanceToCheck, maxBoundaryTSRetry
 
-        time_in_data_available_start_day1 = decor_get_nearest_time_epoch(restClient=rest_client,
-                                                                     deviceName=meter_name_approved[1],
-                                                                     date=start_epoch,
-                                                                     # TODO: change it to string time or other functions
-                                                                     key_to_ask_for_nearest=meter_name_approved[2],
-                                                                     from_epoch=True,
-                                                                     epochDistanceToCheckInner=epochDistanceToCheck,
-                                                                     maxBoundaryTSRetryInner=maxBoundaryTSRetry)
+                if clk_EN == True:
+                    epochDistanceToCheck = 1  # 1 minutes each query
+                    maxBoundaryTSRetry = .1  # .1*60 = 6 minutes
 
-        time_in_data_available_stop_day1 = decor_get_nearest_time_epoch(restClient=rest_client,
-                                                                    deviceName=meter_name_approved[1],
-                                                                    date=stop_epoch_day1,
-                                                                    # TODO: change it to string time or other functions
-                                                                    key_to_ask_for_nearest=meter_name_approved[2],
-                                                                    from_epoch=True,
-                                                                    epochDistanceToCheckInner=epochDistanceToCheck,
-                                                                    maxBoundaryTSRetryInner=maxBoundaryTSRetry)
+                print('maxBoundaryTSRetry, ', epochDistanceToCheck, maxBoundaryTSRetry)
 
-        if (time_in_data_available_stop_day1 == 0 or time_in_data_available_start_day1 == 0):
-            data_day1.update({'available': False})
-            if meter_kind == 'water':
-                data_day1.update({"telemetry-diff": 'no data'})
-                # print(data_end.get())
-                data_day1.update({'unit': 'متر مکعب'})
-            elif meter_kind == 'electricity':
-                data_day1.update(
-                    {"telemetry-diff": 'no data'})
-                # print(data_end)
-                data_day1.update({'unit': 'کیلو وات ساعت'})
+                time_in_data_available_pre_start_lastday = pre_start_epoch_lastday * 1000
+                time_in_data_available_start_lastday = start_epoch_lastday * 1000
+                time_in_data_available_stop_lastday = stop_epoch * 1000
+                deviceEntity_lastday = get_device_entity_by_name(restClient=rest_client,
+                                                                 deviceName=meter_name_approved[1])
 
-        print('here', meter_data_return_dict)
-        deviceEntity_day1 = get_device_entity_by_name(restClient=rest_client, deviceName=meter_name_approved[1])
-
-        if (not time_in_data_available_stop_day1 == 0) and (
-                not time_in_data_available_start_day1 == 0):  # check if data is available in such epochs
-            data_start_day1 = rest_client.get_timeseries(entity_id=deviceEntity_day1, keys=meter_name_approved[2],
-                                                     start_ts=time_in_data_available_start_day1 - 1,
-                                                     end_ts=time_in_data_available_start_day1 + 1)
-            print('lets see the data_start_day1: ', data_start_day1)
-            data_start_decode_day1 = float(data_start_day1.get(meter_name_approved[2])[0].get('value'))
-            print('lets see the data_start_decode_day1: ', data_start_decode_day1)
-            data_end_day1 = rest_client.get_timeseries(entity_id=deviceEntity_day1, keys=meter_name_approved[2],
-                                                   start_ts=time_in_data_available_stop_day1 - 1,
-                                                   end_ts=time_in_data_available_stop_day1 + 1)
-            data_end_decode_day1 = float(data_end_day1.get(meter_name_approved[2])[0].get('value'))
-            print('lets see the data_end_decode_day1: ', data_end_decode_day1)
-            data_day1.update({'available': True})
-            if meter_kind == 'water':
-                data_day1.update({"telemetry-diff": round(data_end_decode_day1 - data_start_decode_day1, 3)})
-                # print(data_end.get())
-                data_day1.update({'unit': 'متر مکعب'})
-            elif meter_kind == 'electricity':
-                data_day1.update(
-                    {"telemetry-diff": round((data_end_decode_day1 - data_start_decode_day1) * meter_name_approved[3], 3)})
-                # print(data_end)
-                data_day1.update({'unit': 'کیلو وات ساعت'})
-
-    DictData2 = {}
-    DictData2.update({'day 1': data_day1})
-
-    for k in range(1 , (len(days_separated) - 1)):
-        # start to query
-        j = days_separated[k]
-        p = k + 1
-        next_j = days_separated[k+1]
-        data2 = {'available': False}
-        # meter_data_return_dict.update({'error-time-start-avlbl': None})
-        # meter_data_return_dict.update({'error-time-stop-avlbl': None})
-        start_epd = jalali_string_to_time(j)
-        stop_epd = jalali_string_to_time(next_j)
-        if (not meter_kind_approved == None) \
-                and (not meter_name_approved == None) \
-                and (time_approved == True):
-
-
-            from .APITB import epochDistanceToCheck, maxBoundaryTSRetry
-
-            if clk_EN == True:
-                epochDistanceToCheck = 1  # 1 minutes each query
-                maxBoundaryTSRetry = .1  # .1*60 = 6 minutes
-
-            print('maxBoundaryTSRetry, ', epochDistanceToCheck, maxBoundaryTSRetry)
-
-
-            time_in_data_available_start2 = decor_get_nearest_time_epoch(restClient=rest_client,
-                                                                        deviceName=meter_name_approved[1],
-                                                                        date=start_epd,
-                                                                        # TODO: change it to string time or other functions
-                                                                        key_to_ask_for_nearest=meter_name_approved[2],
-                                                                        from_epoch=True,
-                                                                        epochDistanceToCheckInner=epochDistanceToCheck,
-                                                                        maxBoundaryTSRetryInner=maxBoundaryTSRetry)
-
-            # if time_in_data_available_start == 0:
-            #     data2.update({'error-time-start-avlbl': True})
-
-            time_in_data_available_stop2 = decor_get_nearest_time_epoch(restClient=rest_client,
-                                                                       deviceName=meter_name_approved[1],
-                                                                       date=stop_epd,
-                                                                       # TODO: change it to string time or other functions
-                                                                       key_to_ask_for_nearest=meter_name_approved[2],
-                                                                       from_epoch=True,
-                                                                       epochDistanceToCheckInner=epochDistanceToCheck,
-                                                                       maxBoundaryTSRetryInner=maxBoundaryTSRetry)
-
-            if (time_in_data_available_stop2 == 0 or time_in_data_available_start2 == 0):
-                data2.update({'available': False})
-                if meter_kind == 'water':
-                    data2.update({"telemetry-diff": 'no data'})
-                    # print(data_end.get())
-                    data2.update({'unit': 'متر مکعب'})
-                elif meter_kind == 'electricity':
-                    data2.update(
-                        {"telemetry-diff": 'no data'})
-                    # print(data_end)
-                    data2.update({'unit': 'کیلو وات ساعت'})
-                # meter_data_return_dict.update({'error-time-stop-avlbl': True})
-
-            print('here', meter_data_return_dict)
-            deviceEntity2 = get_device_entity_by_name(restClient=rest_client, deviceName=meter_name_approved[1])
-
-            if (not time_in_data_available_stop2 == 0) and (
-            not time_in_data_available_start2 == 0):  # check if data is available in such epochs
-                data_start2 = rest_client.get_timeseries(entity_id=deviceEntity2, keys=meter_name_approved[2],
-                                                        start_ts=time_in_data_available_start2 - 1,
-                                                        end_ts=time_in_data_available_start2 + 1)
-                data_start_decode2 = float(data_start2.get(meter_name_approved[2])[0].get('value'))
-                data_end2 = rest_client.get_timeseries(entity_id=deviceEntity2, keys=meter_name_approved[2],
-                                                      start_ts=time_in_data_available_stop2 - 1,
-                                                      end_ts=time_in_data_available_stop2 + 1)
-                data_end_decode2 = float(data_end2.get(meter_name_approved[2])[0].get('value'))
-
-                data2.update({'available': True})
-                if meter_kind == 'water':
-                    data2.update({"telemetry-diff": round(data_end_decode2 - data_start_decode2, 3)})
-                    # print(data_end.get())
-                    data2.update({'unit': 'متر مکعب'})
-                elif meter_kind == 'electricity':
-                    data2.update(
-                        {"telemetry-diff": round((data_end_decode2 - data_start_decode2) * meter_name_approved[3], 3)})
-                    # print(data_end)
-                    data2.update({'unit': 'کیلو وات ساعت'})
-
-        DictData2.update({f'day {p}' : data2})
-
-    if clk_EN == True:
-        data_lastday = {'available': False}
-        start_epoch_lastday = jalali_string_to_time(days_separated[-1])
-        if (not meter_kind_approved == None) \
-                and (not meter_name_approved == None) \
-                and (time_approved == True):
-
-            from .APITB import epochDistanceToCheck, maxBoundaryTSRetry
-
-            if clk_EN == True:
-                epochDistanceToCheck = 1  # 1 minutes each query
-                maxBoundaryTSRetry = .1  # .1*60 = 6 minutes
-
-            print('maxBoundaryTSRetry, ', epochDistanceToCheck, maxBoundaryTSRetry)
-
-            time_in_data_available_start_lastday = decor_get_nearest_time_epoch(restClient=rest_client,
-                                                                                deviceName=meter_name_approved[1],
-                                                                                date=start_epoch_lastday,
-                                                                                # TODO: change it to string time or other functions
-                                                                                key_to_ask_for_nearest=
-                                                                                meter_name_approved[2],
-                                                                                from_epoch=True,
-                                                                                epochDistanceToCheckInner=epochDistanceToCheck,
-                                                                                maxBoundaryTSRetryInner=maxBoundaryTSRetry)
-
-            time_in_data_available_stop_lastday = decor_get_nearest_time_epoch(restClient=rest_client,
-                                                                               deviceName=meter_name_approved[1],
-                                                                               date=stop_epoch,
-                                                                               # TODO: change it to string time or other functions
-                                                                               key_to_ask_for_nearest=
-                                                                               meter_name_approved[2],
-                                                                               from_epoch=True,
-                                                                               epochDistanceToCheckInner=epochDistanceToCheck,
-                                                                               maxBoundaryTSRetryInner=maxBoundaryTSRetry)
-
-            if (time_in_data_available_stop_lastday == 0 or time_in_data_available_start_lastday == 0):
-                data_lastday.update({'available': False})
-                if meter_kind == 'water':
-                    data_lastday.update({"telemetry-diff": 'no data'})
-                    # print(data_end.get())
-                    data_lastday.update({'unit': 'متر مکعب'})
-                elif meter_kind == 'electricity':
-                    data_lastday.update(
-                        {"telemetry-diff": 'no data'})
-                    # print(data_end)
-                    data_lastday.update({'unit': 'کیلو وات ساعت'})
-                # meter_data_return_dict.update({'error-time-stop-avlbl': True})
-
-            print('here', meter_data_return_dict)
-            deviceEntity_lastday = get_device_entity_by_name(restClient=rest_client, deviceName=meter_name_approved[1])
-
-            if (not time_in_data_available_stop_lastday == 0) and (
-                    not time_in_data_available_start_lastday == 0):  # check if data is available in such epochs
                 data_start_lastday = rest_client.get_timeseries(entity_id=deviceEntity_lastday,
                                                                 keys=meter_name_approved[2],
-                                                                start_ts=time_in_data_available_start_lastday - 1,
-                                                                end_ts=time_in_data_available_start_lastday + 1)
-                data_start_decode_lastday = float(data_start_lastday.get(meter_name_approved[2])[0].get('value'))
+                                                                start_ts=time_in_data_available_pre_start_lastday,
+                                                                end_ts=time_in_data_available_start_lastday)
                 data_end_lastday = rest_client.get_timeseries(entity_id=deviceEntity_lastday,
                                                               keys=meter_name_approved[2],
-                                                              start_ts=time_in_data_available_stop_lastday - 1,
-                                                              end_ts=time_in_data_available_stop_lastday + 1)
-                data_end_decode_lastday = float(data_end_lastday.get(meter_name_approved[2])[0].get('value'))
+                                                              start_ts=time_in_data_available_start_lastday,
+                                                              end_ts=time_in_data_available_stop_lastday)
 
-                data_lastday.update({'available': True})
-                if meter_kind == 'water':
-                    data_lastday.update(
-                        {"telemetry-diff": round(data_end_decode_lastday - data_start_decode_lastday, 3)})
-                    # print(data_end.get())
-                    data_lastday.update({'unit': 'متر مکعب'})
-                elif meter_kind == 'electricity':
-                    data_lastday.update(
-                        {"telemetry-diff": round(
-                            (data_end_decode_lastday - data_start_decode_lastday) * meter_name_approved[3], 3)})
-                    # print(data_end)
-                    data_lastday.update({'unit': 'کیلو وات ساعت'})
-        lastday = len(days_separated)
-        DictData2.update({f'day {lastday}': data_lastday})
+                if is_empty_dict(data_end_lastday) or is_empty_dict(data_start_lastday):
+                    data_lastday.update({'available': False})
+                    if meter_kind == 'water':
+                        data_lastday.update({"telemetry-diff": 'no data'})
+                        # print(data_end.get())
+                        data_lastday.update({'unit': 'متر مکعب'})
+                    elif meter_kind == 'electricity':
+                        data_lastday.update(
+                            {"telemetry-diff": 'no data'})
+                        # print(data_end)
+                        data_lastday.update({'unit': 'کیلو وات ساعت'})
+                    # meter_data_return_dict.update({'error-time-stop-avlbl': True})
+                else:
+                    data_start_decode_lastday = float(data_start_lastday.get(meter_name_approved[2])[0].get('value'))
+                    data_end_decode_lastday = float(data_end_lastday.get(meter_name_approved[2])[0].get('value'))
+
+                    data_lastday.update({'available': True})
+                    if meter_kind == 'water':
+                        data_lastday.update(
+                            {"telemetry-diff": round(data_end_decode_lastday - data_start_decode_lastday, 3)})
+                        # print(data_end.get())
+                        data_lastday.update({'unit': 'متر مکعب'})
+                    elif meter_kind == 'electricity':
+                        data_lastday.update(
+                            {"telemetry-diff": round(
+                                (data_end_decode_lastday - data_start_decode_lastday) * meter_name_approved[3], 3)})
+                        # print(data_end)
+                        data_lastday.update({'unit': 'کیلو وات ساعت'})
+            lastday = len(days_separated)
+            DictData2.update({f'day {lastday}': data_lastday})
 
 
-    meter_data_return_dict.update({'data_daybyday': DictData2})  # TODO: include unit and value to data
-    print('here', meter_data_return_dict)
+        meter_data_return_dict.update({'data_daybyday': DictData2})  # TODO: include unit and value to data
+        print('here', meter_data_return_dict)
 
-    # sum_of_days= 0
-    # for k in DictData2:
-    #     sum_of_days += DictData2[k]['telemetry-diff']
-    # print('sum_of_days is :',sum_of_days)
-    # data.update({'available': True})
-    # if meter_kind == 'water':
-    #     data.update({"telemetry-diff": sum_of_days})
-    #     # print(data_end.get())
-    #     data.update({'unit': 'متر مکعب'})
-    # elif meter_kind == 'electricity':
-    #     data.update(
-    #         {"telemetry-diff": sum_of_days})
-    #     # print(data_end)
-    #     data.update({'unit': 'کیلو وات ساعت'})
-    # print(data)
-    # meter_data_return_dict.update({'data': data})  # TODO: include unit and value to data
-    # meter_data_return_dict.update({'sum_of_days': sum_of_days})
-    # print('here', meter_data_return_dict)
+        # sum_of_days= 0
+        # for k in DictData2:
+        #     sum_of_days += DictData2[k]['telemetry-diff']
+        # print('sum_of_days is :',sum_of_days)
+        # data.update({'available': True})
+        # if meter_kind == 'water':
+        #     data.update({"telemetry-diff": sum_of_days})
+        #     # print(data_end.get())
+        #     data.update({'unit': 'متر مکعب'})
+        # elif meter_kind == 'electricity':
+        #     data.update(
+        #         {"telemetry-diff": sum_of_days})
+        #     # print(data_end)
+        #     data.update({'unit': 'کیلو وات ساعت'})
+        # print(data)
+        # meter_data_return_dict.update({'data': data})  # TODO: include unit and value to data
+        # meter_data_return_dict.update({'sum_of_days': sum_of_days})
+        # print('here', meter_data_return_dict)
 
 
     return jsonify(meter_data_return_dict)
@@ -549,7 +495,6 @@ def get_meter_data_API():
 def get_all_meter_data_API():
     # gather form data returned from js fetch API
     meter_kind = request.form.get('meterKind')
-   # meter_name = request.form.get('meterName')
     start_time = request.form.get('startTime')
     stop_time = request.form.get('endTime')
     clk_EN = request.form.get('clkEN')
@@ -601,9 +546,9 @@ def get_all_meter_data_API():
             all_meter_data_return_dict.update({'error-stop-clock': True})
 
     # see if the Dates are valid
-    start_epoch = jalali_string_to_time(start_time)
-    stop_epoch = jalali_string_to_time(stop_time)
-
+    start_epoch, start_date_obj = jalali_string_to_time(start_time)
+    stop_epoch, stop_date_obj = jalali_string_to_time(stop_time)
+    pre_start_epoch_ms = (start_epoch - 86400000)*1000
 
     print('start epoch bef:', start_epoch)
     if not start_epoch == None:
@@ -644,23 +589,6 @@ def get_all_meter_data_API():
 #changed_updated_form
     meter_name_approved = None
     from .APITB import electricityKeeper, waterKeeper, gasKeeper
-
-    # Function to get the correct keeper dictionary based on meter kind
-    # def get_keeper(meter_kind_local):
-    #     if meter_kind_local == 'electricity':
-    #         return electricityKeeper
-    #     elif meter_kind_local == 'water':
-    #         return waterKeeper
-    #     elif meter_kind_local == 'gas':
-    #         return gasKeeper
-    #     else:
-    #         return None
-        # Iterate through each meter kind
-
-    # for meter_kind in ['electricity', 'water', 'gas']:
-    #     keeper = get_keeper(meter_kind)
-    #     if keeper is None:
-    #         continue
     DictData = {}
     for meter_info in wholeKeeeper.get(meter_kind).values():
         print("meter_info:")
@@ -686,41 +614,26 @@ def get_all_meter_data_API():
 
             print('maxBoundaryTSRetry, ',epochDistanceToCheck, maxBoundaryTSRetry)
 
-            time_in_data_available_start = decor_get_nearest_time_epoch(restClient=rest_client,
-                                                                        deviceName=meter_name_approved[1],
-                                                                        date=start_epoch,  # TODO: change it to string time or other functions
-                                                                        key_to_ask_for_nearest=meter_name_approved[2],
-                                                                        from_epoch=True,
-                                                                        epochDistanceToCheckInner=epochDistanceToCheck,
-                                                                        maxBoundaryTSRetryInner=maxBoundaryTSRetry)
-
+            time_in_data_available_start = start_epoch * 1000
             if time_in_data_available_start == 0:
                 all_meter_data_return_dict.update({'error-time-start-avlbl': True})
 
             # get nearest data to stop epoch
-            time_in_data_available_stop = decor_get_nearest_time_epoch(restClient=rest_client,
-                                                                        deviceName=meter_name_approved[1],
-                                                                        date=stop_epoch,  # TODO: change it to string time or other functions
-                                                                        key_to_ask_for_nearest=meter_name_approved[2],
-                                                                        from_epoch=True,
-                                                                        epochDistanceToCheckInner=epochDistanceToCheck,
-                                                                        maxBoundaryTSRetryInner=maxBoundaryTSRetry)
+            time_in_data_available_stop = stop_epoch*1000
             if time_in_data_available_stop == 0:
                 all_meter_data_return_dict.update({'error-time-stop-avlbl': True})
 
-            print('here', all_meter_data_return_dict)
             deviceEntity = get_device_entity_by_name(restClient=rest_client, deviceName=meter_name_approved[1])
+            data_start = rest_client.get_timeseries(entity_id=deviceEntity, keys=meter_name_approved[2],
+                                                    start_ts=pre_start_epoch_ms,
+                                                    end_ts=time_in_data_available_start)
+            data_end = rest_client.get_timeseries(entity_id=deviceEntity, keys=meter_name_approved[2],
+                                                  start_ts=time_in_data_available_start,
+                                                  end_ts=time_in_data_available_stop)
 
-            if (not time_in_data_available_stop ==0) and (not time_in_data_available_start == 0):  # check if data is available in such epochs
-                data_start = rest_client.get_timeseries(entity_id=deviceEntity, keys=meter_name_approved[2],
-                                                 start_ts=time_in_data_available_start-1,
-                                                       end_ts=time_in_data_available_start +1)
+            if not (is_empty_dict(data_end) or is_empty_dict(data_start)):  # check if data is available in such epochs
                 data_start_decode = float(data_start.get(meter_name_approved[2])[0].get('value'))
-                data_end = rest_client.get_timeseries(entity_id=deviceEntity, keys=meter_name_approved[2],
-                                                       start_ts=time_in_data_available_stop - 1,
-                                                       end_ts=time_in_data_available_stop + 1)
                 data_end_decode = float(data_end.get(meter_name_approved[2])[0].get('value'))
-
                 data = {}
                 data.update({'available': True})
                 if meter_kind == 'water':
@@ -754,6 +667,7 @@ def get_all_charts_data_API():
     one_day_before = (today_jalali - timedelta(days=1)).strftime("%Y-%m-%d")
     one_week_before = (today_jalali - timedelta(days=6)).strftime("%Y-%m-%d")
     one_month_before = (today_jalali - timedelta(days=30)).strftime("%Y-%m-%d")
+    # two_day_before = (today_jalali - timedelta(days=2)).strftime("%Y-%m-%d")
 
     meter_kind = request.form.get('meterKind')
     start_time = [one_day_before,one_week_before,one_month_before]
@@ -801,8 +715,7 @@ def get_all_charts_data_API():
             midnight_index = i
         current_time += timedelta(hours=1)
 
-    print("Times separated from yesterday to now:")
-    print(times_separated)
+    print("Times separated from yesterday to now: ", times_separated)
 
     all_charts_data_return_dict.update({'times_separated': times_separated})
 
@@ -829,23 +742,9 @@ def get_all_charts_data_API():
         all_charts_data_return_dict.update({'error-start-clock': True})
         all_charts_data_return_dict.update({'error-stop-clock': True})
 
-    start_epoch0 = jalali_string_to_time(start_time[0])
-    start_epoch1 = jalali_string_to_time(start_time[1])
-    start_epoch2 = jalali_string_to_time(start_time[2])
-    stop_epoch = jalali_string_to_time(stop_time)
-    print(start_epoch0, start_epoch1, start_epoch2, stop_epoch)
-
-    # print('start_epoch1  bef:', start_epoch1)
-    # if not start_epoch1 == None:
-    #     start_epoch1 = start_epoch1 + raisedStartEpoch
-    #     if sys.platform.startswith('linux'):
-    #         start_epoch1 = start_epoch1 - (3 * 60 + 30) * 60
-    #
-    # print('start_epoch2  bef:', start_epoch2)
-    # if not start_epoch2 == None:
-    #     start_epoch2 = start_epoch2 + raisedStartEpoch
-    #     if sys.platform.startswith('linux'):
-    #         start_epoch2 = start_epoch2 - (3 * 60 + 30) * 60
+    start_epoch0, start_date_obj = jalali_string_to_time(start_time[0])
+    stop_epoch, stop_date_obj = jalali_string_to_time(stop_time)
+    print(start_epoch0, stop_epoch)
 
     all_charts_data_return_dict.update({'error-start-time': None})
     all_charts_data_return_dict.update({'error-stop-time': None})
@@ -876,12 +775,23 @@ def get_all_charts_data_API():
             epochDistanceToCheck = 1  # 1 minutes each query
             maxBoundaryTSRetry = .1  # .1*60 = 6 minutes
             for k in range(0, (len(times_separated) - 1)):
+                # print(k)
+                pre_time_obj = jdatetime.datetime.strptime(times_separated[0], "%H:%M")
+                previous_j = (pre_time_obj - timedelta(hours=1)).strftime("%H:%M")
+                # previous_j = times_separated[k-1]
                 j = times_separated[k]
                 next_j = times_separated[k + 1]
                 p = k + 1
                 data0 = {'available': False}
                 raisedStartEpoch2 = 0
                 raisedStopEpoch2 = 0
+                pre_startClockList2 = str(previous_j).split(':')
+                try:
+                    pre_raisedStartEpoch2 = (int(pre_startClockList2[0]) * 60 + int(pre_startClockList2[1])) * 60
+                    # print(raisedStartEpoch2)
+                except:
+                    all_charts_data_return_dict.update({'error-start-clock': True})
+
                 startClockList2 = str(j).split(':')
                 try:
                     raisedStartEpoch2 = (int(startClockList2[0]) * 60 + int(startClockList2[1])) * 60
@@ -896,6 +806,10 @@ def get_all_charts_data_API():
                 except:
                     all_charts_data_return_dict.update({'error-stop-clock': True})
 
+                pre_start_epoch_1hour = start_epoch0 + pre_raisedStartEpoch2
+                if sys.platform.startswith('linux'):
+                    pre_start_epoch_1hour = pre_start_epoch_1hour - (3 * 60 + 30) * 60
+
                 start_epoch_1hour = start_epoch0 + raisedStartEpoch2
                 if sys.platform.startswith('linux'):
                     start_epoch_1hour = start_epoch_1hour - (3 * 60 + 30) * 60
@@ -904,39 +818,44 @@ def get_all_charts_data_API():
                 if sys.platform.startswith('linux'):
                     stop_epoch_1hour = stop_epoch_1hour - (3 * 60 + 30) * 60
 
-                if k  > (midnight_index-1):
-                    start_epoch_1hour = stop_epoch + raisedStartEpoch2
+                if k  == (midnight_index-1):
+                    start_epoch_1hour = start_epoch_1hour
                     if sys.platform.startswith('linux'):
                         start_epoch_1hour = start_epoch_1hour - (3 * 60 + 30) * 60
 
-                    stop_epoch_1hour = stop_epoch + raisedStopEpoch2
+                    stop_epoch_1hour = stop_epoch_1hour + 86400
                     if sys.platform.startswith('linux'):
                         stop_epoch_1hour = stop_epoch_1hour - (3 * 60 + 30) * 60
 
-                print('here is start_epoch_1hour: ',start_epoch_1hour)
-                print('here is stop_epoch_1hour: ', stop_epoch_1hour)
+                if k  > (midnight_index-1):
+                    start_epoch_1hour = start_epoch_1hour + 86400
+                    if sys.platform.startswith('linux'):
+                        start_epoch_1hour = start_epoch_1hour - (3 * 60 + 30) * 60
 
-                time_in_data_available_start0 = decor_get_nearest_time_epoch(restClient=rest_client,
-                                                                             deviceName=meter_name_approved[1],
-                                                                             date=start_epoch_1hour,
-                                                                             # TODO: change it to string time or other functions
-                                                                             key_to_ask_for_nearest=meter_name_approved[2],
-                                                                             from_epoch=True,
-                                                                             epochDistanceToCheckInner=epochDistanceToCheck,
-                                                                             maxBoundaryTSRetryInner=maxBoundaryTSRetry)
+                    stop_epoch_1hour = stop_epoch_1hour + 86400
+                    if sys.platform.startswith('linux'):
+                        stop_epoch_1hour = stop_epoch_1hour - (3 * 60 + 30) * 60
 
-                time_in_data_available_stop0 = decor_get_nearest_time_epoch(restClient=rest_client,
-                                                                            deviceName=meter_name_approved[1],
-                                                                            date=stop_epoch_1hour,
-                                                                            # TODO: change it to string time or other functions
-                                                                            key_to_ask_for_nearest=meter_name_approved[2],
-                                                                            from_epoch=True,
-                                                                            epochDistanceToCheckInner=epochDistanceToCheck,
-                                                                            maxBoundaryTSRetryInner=maxBoundaryTSRetry)
 
-                print('here is time_in_data_available_start0: ', time_in_data_available_start0)
-                print('here is time_in_data_available_stop0: ', time_in_data_available_stop0)
-                if (time_in_data_available_stop0 == 0 or time_in_data_available_start0 == 0):
+                # print('here is start_epoch_1hour: ',start_epoch_1hour)
+                # print('here is stop_epoch_1hour: ', stop_epoch_1hour)
+
+                time_in_data_available_start0 = start_epoch_1hour * 1000
+                time_in_data_available_stop0 = stop_epoch_1hour * 1000
+                # print('here is time_in_data_available_start0: ', time_in_data_available_start0)
+                # print('here is time_in_data_available_stop0: ', time_in_data_available_stop0)
+
+                deviceEntity0 = get_device_entity_by_name(restClient=rest_client, deviceName=meter_name_approved[1])
+
+                data_start0 = rest_client.get_timeseries(entity_id=deviceEntity0, keys=meter_name_approved[2],
+                                                         start_ts=(pre_start_epoch_1hour * 1000),
+                                                         end_ts=time_in_data_available_start0)
+                # print(data_start0)
+                data_end0 = rest_client.get_timeseries(entity_id=deviceEntity0, keys=meter_name_approved[2],
+                                                       start_ts=time_in_data_available_start0,
+                                                       end_ts=time_in_data_available_stop0)
+                # print(data_end0)
+                if is_empty_dict(data_end0) or is_empty_dict(data_start0):
                     data0.update({'available': False})
                     if meter_kind == 'water':
                         data0.update({"telemetry-diff": 'no data'})
@@ -947,18 +866,8 @@ def get_all_charts_data_API():
                             {"telemetry-diff": 'no data'})
                         # print(data_end)
                         data0.update({'unit': 'کیلو وات ساعت'})
-
-                deviceEntity0 = get_device_entity_by_name(restClient=rest_client, deviceName=meter_name_approved[1])
-
-                if (not time_in_data_available_stop0 == 0) and (
-                        not time_in_data_available_start0 == 0):  # check if data is available in such epochs
-                    data_start0 = rest_client.get_timeseries(entity_id=deviceEntity0, keys=meter_name_approved[2],
-                                                             start_ts=time_in_data_available_start0 - 1,
-                                                             end_ts=time_in_data_available_start0 + 1)
+                else:
                     data_start_decode0 = float(data_start0.get(meter_name_approved[2])[0].get('value'))
-                    data_end0 = rest_client.get_timeseries(entity_id=deviceEntity0, keys=meter_name_approved[2],
-                                                           start_ts=time_in_data_available_stop0 - 1,
-                                                           end_ts=time_in_data_available_stop0 + 1)
                     data_end_decode0 = float(data_end0.get(meter_name_approved[2])[0].get('value'))
 
                     data0.update({'available': True})
@@ -975,36 +884,33 @@ def get_all_charts_data_API():
             DictData_lastday.update({meter_name_approved[0] :DictData0})
             for k in range(0, (len(days_separated) - 1)):
                 # start to query
+                pre_date_obj = jdatetime.datetime.strptime(days_separated[0], "%Y-%m-%d").date()
+                pre_start_date = pre_date_obj - timedelta(days=1)
+                previous_j = pre_start_date.strftime("%Y-%m-%d")
                 j = days_separated[k]
                 p = k + 1
                 next_j = days_separated[k + 1]
                 data1 = {'available': False}
                 # meter_data_return_dict.update({'error-time-start-avlbl': None})
                 # meter_data_return_dict.update({'error-time-stop-avlbl': None})
-                start_epd = jalali_string_to_time(j)
-                stop_epd = jalali_string_to_time(next_j)
 
-                time_in_data_available_start1 = decor_get_nearest_time_epoch(restClient=rest_client,
-                                                                             deviceName=meter_name_approved[1],
-                                                                             date=start_epd,
-                                                                             # TODO: change it to string time or other functions
-                                                                             key_to_ask_for_nearest=meter_name_approved[
-                                                                                 2],
-                                                                             from_epoch=True,
-                                                                             epochDistanceToCheckInner=epochDistanceToCheck,
-                                                                             maxBoundaryTSRetryInner=maxBoundaryTSRetry)
+                pre_start_epd, pre_start_epd_obj = jalali_string_to_time(previous_j)
+                start_epd, start_epd_obj = jalali_string_to_time(j)
+                stop_epd, stop_epd_obj = jalali_string_to_time(next_j)
 
-                time_in_data_available_stop1 = decor_get_nearest_time_epoch(restClient=rest_client,
-                                                                            deviceName=meter_name_approved[1],
-                                                                            date=stop_epd,
-                                                                            # TODO: change it to string time or other functions
-                                                                            key_to_ask_for_nearest=meter_name_approved[
-                                                                                2],
-                                                                            from_epoch=True,
-                                                                            epochDistanceToCheckInner=epochDistanceToCheck,
-                                                                            maxBoundaryTSRetryInner=maxBoundaryTSRetry)
+                time_in_data_available_pre_start1 = pre_start_epd * 1000
+                time_in_data_available_start1 = start_epd * 1000
+                time_in_data_available_stop1 = stop_epd * 1000
 
-                if (time_in_data_available_stop1 == 0 or time_in_data_available_start1 == 0):
+                deviceEntity1 = get_device_entity_by_name(restClient=rest_client, deviceName=meter_name_approved[1])
+                data_start1 = rest_client.get_timeseries(entity_id=deviceEntity1, keys=meter_name_approved[2],
+                                                         start_ts=time_in_data_available_pre_start1,
+                                                         end_ts=time_in_data_available_start1)
+                data_end1 = rest_client.get_timeseries(entity_id=deviceEntity1, keys=meter_name_approved[2],
+                                                       start_ts=time_in_data_available_start1,
+                                                       end_ts=time_in_data_available_stop1)
+
+                if is_empty_dict(data_end1) or is_empty_dict(data_start1):
                     data1.update({'available': False})
                     if meter_kind == 'water':
                         data1.update({"telemetry-diff": 'no data'})
@@ -1017,20 +923,9 @@ def get_all_charts_data_API():
                         data1.update({'unit': 'کیلو وات ساعت'})
                     # meter_data_return_dict.update({'error-time-stop-avlbl': True})
 
-                # print('here', meter_data_return_dict)
-                deviceEntity1 = get_device_entity_by_name(restClient=rest_client, deviceName=meter_name_approved[1])
-
-                if (not time_in_data_available_stop1 == 0) and (
-                        not time_in_data_available_start1 == 0):  # check if data is available in such epochs
-                    data_start1 = rest_client.get_timeseries(entity_id=deviceEntity1, keys=meter_name_approved[2],
-                                                             start_ts=time_in_data_available_start1 - 1,
-                                                             end_ts=time_in_data_available_start1 + 1)
+                else:
                     data_start_decode1 = float(data_start1.get(meter_name_approved[2])[0].get('value'))
-                    data_end1 = rest_client.get_timeseries(entity_id=deviceEntity1, keys=meter_name_approved[2],
-                                                           start_ts=time_in_data_available_stop1 - 1,
-                                                           end_ts=time_in_data_available_stop1 + 1)
                     data_end_decode1 = float(data_end1.get(meter_name_approved[2])[0].get('value'))
-
                     data1.update({'available': True})
                     if meter_kind == 'water':
                         data1.update({"telemetry-diff": round(data_end_decode1 - data_start_decode1, 3)})
