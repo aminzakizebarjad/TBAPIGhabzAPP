@@ -884,7 +884,7 @@ def get_all_charts_data_API():
             DictData_lastday.update({meter_name_approved[0] :DictData0})
             for k in range(0, (len(days_separated) - 1)):
                 # start to query
-                pre_date_obj = jdatetime.datetime.strptime(days_separated[0], "%Y-%m-%d").date()
+                pre_date_obj = jdatetime.datetime.strptime(days_separated[k], "%Y-%m-%d").date()
                 pre_start_date = pre_date_obj - timedelta(days=1)
                 previous_j = pre_start_date.strftime("%Y-%m-%d")
                 j = days_separated[k]
