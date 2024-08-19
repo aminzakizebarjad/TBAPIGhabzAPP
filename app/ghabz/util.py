@@ -89,7 +89,7 @@ def jalali_string_to_time(timeToConvert: str) -> jdatetime.datetime:
     # print(date_obj.hour, date_obj.minute, date_obj.second)
     return int(date_obj.togregorian().timestamp()), date_obj
   else:
-    return None
+    return None, None
 
 # def jalali_string_to_epoch()
 class dayEpochSwipper:
