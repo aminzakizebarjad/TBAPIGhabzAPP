@@ -1,0 +1,49 @@
+{% extends "ABI_NEGAR_TEMPLATE.html" %}
+{% block title %}کنتور های فعال {% endblock %}
+
+
+{% block form %}
+    <form>
+        <div class="formContainer">
+            <select name="meter_kind_selection" id="meter_kind_selection" class="meterSelect form-select font-nazanin" aria-label="Default select example" autofocus="true">
+                <option selected value="None">نوع کنتور را انتخاب کنید</option>
+                <option value="water">آب</option>
+                <option value="electricity">برق</option>
+                <option value="gas" disabled=true>گاز</option>
+            </select>
+            <div class="d-flex justify-content-center">
+              <button type="button" class="btn btn-primary" id="submit-butt">
+                  <span>Submit</span>
+              </button>  {# never use type="submit" when using fetch API#}
+            </div>
+
+            <div class="d-flex justify-content-center">
+                  <button type="button" class="btn btn-primary" id="spinner" hidden="true" disabled="true">
+                      <span class="spinner-grow spinner-border" ></span>
+                  </button>  {# never use type="submit" when using fetch API #}
+
+                </div>
+
+        </div>
+
+
+        <select name="meter_place_selection" id="meter_place_selection" class="form-select centered-form-object font-nazanin" aria-label="Default select example" disabled="true" hidden="true">
+            <option selected value="None">محل کنتور را انتخاب کنید</option>
+          </select>
+
+    </form>
+
+    <div id="error-division" class="error-div font-nazanin">
+
+    </div>
+
+    <div class="deviceContainer font-nazanin" id="deviceContainer">
+        <!-- Devices will be generated here -->
+        </div>
+
+
+        <script>const meter_name_API_url = "{{ url_for('ghabz.meter_name_API') }}"</script>
+        <script>const get_all_isAlive_data_API_url = "{{ url_for('ghabz.get_all_isAlive_data_API') }}"</script>
+         <script type="text/javascript" src="{{ url_for('ghabz.static', filename='js/Is_Alive.js') }}"></script>
+
+{% endblock %}

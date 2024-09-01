@@ -188,15 +188,20 @@ def get_device_entity_by_name(restClient: RestClientCE, deviceName: str) -> Enti
 
 def get_device_alive(restClient: RestClientCE, deviceName: str):
     try:
+        nowTime = int(time.time())
+        allowedTime = nowTime-aliveMinutesParameters*60
         device_dict = get_device_name_id_dict(restClient)
         entity_id = EntityId(id=device_dict.get(deviceName), entity_type='DEVICE')
-        latestTimeSeries = restClient.get_latest_timeseries(entity_id)
-        # print(latestTimeSeries)
-        key1 = list(latestTimeSeries.keys())[0]
-        latestTS = latestTimeSeries.get(key1)[0].get("ts")
-        aliveBoundary = int(time.time()) - aliveMinutesParameters*60
-
-        return aliveBoundary < int(latestTS/1000)
+        latestTimeSeries = restClient.get_timeseries(entity_id=entity_id, keys=key_to_ask_for_nearest,
+                                                    start_ts=allowedTime*1000,
+                                                     end_ts= nowTime*1000)
+        # restClient.get_latest_timeseries(entity_id)
+        latestData = next(iter(latestTimeSeries.values()), None)
+        if latestData:
+            latestTS = latestData[0].get("ts")
+            return allowedTime < int(latestTS/1000)
+        else:
+            return False
 
     except ValueError:
         logging.error("%s does not exist in devices", deviceName)

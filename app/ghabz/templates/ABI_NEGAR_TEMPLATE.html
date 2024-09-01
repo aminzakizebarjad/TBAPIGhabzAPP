@@ -27,35 +27,7 @@
 {% block style %}{% endblock %}
 </head>
 <body>
-{#    <nav class="navbar bg-primary border-bottom">#}
-{#      <div class="container-fluid">#}
-{##}
-{#        <a class="navbar-brand" href="https://abinegar.com">#}
-{#          <img src={{ url_for("static", filename="/images/cropped-logo1.jpg") }} alt="Bootstrap" width="90" height="60">#}
-{#        </a>#}
-{##}
-{#        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="true" aria-label="Toggle navigation">#}
-{#            <span class="navbar-toggler-icon"></span>#}
-{#        </button>#}
-{##}
-{#        <div class="collapse navbar-collapse" id="navbarNav">#}
-{#              <ul class="navbar-nav">#}
-{#                <li class="nav-item">#}
-{#                  <a class="nav-link active" aria-current="page" href="#">Home</a>#}
-{#                </li>#}
-{#                <li class="nav-item">#}
-{#                  <a class="nav-link" href="#">Features</a>#}
-{#                </li>#}
-{#                <li class="nav-item">#}
-{#                  <a class="nav-link" href="#">Pricing</a>#}
-{#                </li>#}
-{#                <li class="nav-item">#}
-{#                  <a class="nav-link disabled" aria-disabled="true">Disabled</a>#}
-{#                </li>#}
-{#              </ul>#}
-{#        </div>#}
-{#      </div>{#container-fluid#}
-{#    </nav>#}
+
 
 <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom navbar-light ">
   <div class="container-fluid">
@@ -71,23 +43,23 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNav" >
-{#      <ul class="navbar-nav nav-tabs custom-nav-tabs ms-auto flex-row-reverse w-100">#}
-{#        <li class="nav-item">#}
-{#          <a class="nav-link active" aria-current="page" href="#">Home</a>#}
-{#        </li>#}
-{#        <li class="nav-item">#}
-{#          <a class="nav-link" href="#">Features</a>#}
-{#        </li>#}
-{#        <li class="nav-item">#}
-{#          <a class="nav-link" href="#">Pricing</a>#}
-{#        </li>#}
-{#        <li class="nav-item">#}
-{#          <a class="nav-link disabled" aria-disabled="true">Disabled</a>#}
-{#        </li>#}
+      <ul class="navbar-nav nav-tabs custom-nav-tabs ms-auto flex-row-reverse w-100">
+        <li class="nav-item">
+          <a class="nav-link" id="nav-ghabz" aria-current="page" href="{{ url_for('ghabz.hello_world') }}" >قبض</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="nav-chart" href="{{ url_for('ghabz.chart') }}" >نمودار</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="nav-alive" href="{{ url_for('ghabz.isAlivePage') }}" >کنتورهای فعال</a>
+        </li>
+
       </ul>
     </div>
   </div>
 </nav>
+
+
 
 {% block form %}
 {% endblock %}

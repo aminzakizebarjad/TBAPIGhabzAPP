@@ -13,8 +13,8 @@ def hello_world():  # put application's code here
 
     return render_template("Tel_Page.html")
 
-@ghabz_bp.route('/telemetry')
-def telemerty():
+@ghabz_bp.route('/chart')
+def chart():
 
     return render_template("Tel_Page2.html")
 
@@ -23,7 +23,7 @@ def telemerty():
 @ghabz_bp.route('/isAlive')
 def isAlivePage():
 
-    return render_template("Tel_Page3.html")
+    return render_template("Is_Alive.html")
 
 def is_empty_dict(d):
     return d is None or not d  # Check if dictionary is None or empty

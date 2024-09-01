@@ -25,16 +25,20 @@ async function fetchWithForm(link, formData) {
 
 document.addEventListener("DOMContentLoaded", function () {
 
+    let navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach((link) => {
+        link.classList.remove('active');
+    });
+
+    const nav_item = document.getElementById("nav-alive");
+    nav_item.classList.add('active');
+
     // let myChart;
     function hideDynamicText() {
         errorDiv.hidden = true;
-        startErrorDiv.hidden = true;
-        stopErrorDiv.hidden = true;
     }
 
     const errorDiv = document.getElementById("error-division");
-    const startErrorDiv = document.getElementById("error-start-time-division");
-    const stopErrorDiv = document.getElementById("error-stop-time-division");
     const meterKind = document.getElementById("meter_kind_selection");
     const submitButt = document.getElementById("submit-butt");
     const spinner = document.getElementById("spinner");
@@ -62,13 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
             formData.append("meterKind", meterKind.value);
             fetchWithForm(meter_name_API_url, formData).then(result => {
                 console.log(result);
-                // for (const opt of Object.keys(result)) {
-                //     var option = document.createElement("option");
-                //     option.text = result[opt][0];
-                //     option.value = opt;
-                //     // console.log(opt);
-                //     meterNameSelect.add(option);
-                // }
+
             });
         }
     });
@@ -102,23 +100,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (isAliveneeded0[device] === true) {
                         deviceDiv.classList.add('active');
                     }
-
-                    // Add dynamic hover effect
-                    // deviceDiv.onmouseover = () => {
-                    //     deviceDiv.style.transition = "transform 0.4s linear, background-color 0.4s linear";
-                    //     deviceDiv.style.transform = "scale(1.2)";
-                    //     deviceDiv.style.backgroundColor = "lightblue";
-                    // };
-                    //
-                    // deviceDiv.onmouseout = () => {
-                    //     deviceDiv.style.transform = "scale(1)";
-                    //     deviceDiv.style.backgroundColor = "white"; // Reset to original color
-                    // };
-
-                    // // Add toggle functionality on click
-                    // deviceDiv.onclick = () => {
-                    //     deviceDiv.classList.toggle('active');
-                    // };
 
                     container.appendChild(deviceDiv);
                 });

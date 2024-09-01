@@ -25,6 +25,14 @@ async function fetchWithForm(link, formData) {
 
 document.addEventListener("DOMContentLoaded", function () {
 
+    let navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach((link) => {
+        link.classList.remove('active');
+    });
+
+    const nav_item = document.getElementById("nav-ghabz");
+    nav_item.classList.add('active');
+
     let myChart;
 
     function hideDynamicText() {
