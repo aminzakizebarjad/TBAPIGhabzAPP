@@ -60,7 +60,6 @@
 
 {% block form %}
 
-
 <!-- form -->
 {#    <div class="form-itself" >#}
         <form> {#action="/calculate_meter" method="post" >#}
@@ -86,11 +85,9 @@
           </div>
 
 
-
           <select name="meter_place_selection" id="meter_place_selection" class="form-select centered-form-object font-nazanin" aria-label="Default select example" disabled="true" >
             <option selected value="None">محل کنتور را انتخاب کنید</option>
           </select>
-
 
 
           <div class="mb-3 centered-form-object font-nazanin">
@@ -122,25 +119,17 @@
             <div class="d-flex justify-content-center">
               <button type="button" class="btn btn-primary" id="submit-butt">
                   <span>Submit</span>
-{#                  <span role="status">Loading...</span>#}
               </button>  {# never use type="submit" when using fetch API #}
             </div>
 
             <div class="d-flex justify-content-center">
               <button type="button" class="btn btn-primary" id="spinner" hidden="true" disabled="true">
                   <span class="spinner-grow spinner-border" ></span>
-{#                  <span role="status">Loading...</span>#}
               </button>  {# never use type="submit" when using fetch API #}
 
             </div>
         </form>
         <!--form-end-->
-{#</div>#}
-{#        <div class="d-flex justify-content-center">#}
-{#            <div class="spinner-grow text-primary " role="status" id="spinner">#}
-{#              <span class="visually-hidden">Loading...</span>#}
-{#            </div>#}
-{#        </div>#}
 
         <div id="data-div" class="font-nazanin">
 
@@ -163,7 +152,7 @@
                   <tr  class="bg-info">
 
                     <th scope="col" class="font-nazanin">محل کنتور</th>
-                    <th scope="col" class="font-nazanin" id="heading2"> </th>
+                    <th scope="col" class="font-nazanin" id="heading2"> </th>  {# heading2 will fill with unit #}
                   </tr>
                 </thead>
                 <tbody  id="all_meter_places_table2">
@@ -176,16 +165,13 @@
             <canvas id="myLineChart" class="chart-canvas"></canvas>
         </div>
 
-
-
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 
         <script src="scripts.js"></script>
 {#if you dont need any charts in the website delete or comment the part above#}
 
-        <script>const meter_name_API_url = "{{ url_for('ghabz.meter_name_API') }}"</script>
+        <script>const meter_name_API_url = "{{ url_for('ghabz.get_meter_name_API') }}"</script>
         <script>const get_meter_data_API_url = "{{ url_for('ghabz.get_meter_data_API') }}"</script>
         <script>const get_all_meter_data_API_url = "{{ url_for('ghabz.get_all_meter_data_API') }}"</script>
-         <script type="text/javascript" src="{{ url_for('ghabz.static', filename='js/Tel_Page.js') }}"></script>
-{% endblock %}
+        <script type="text/javascript" src="{{ url_for('ghabz.static', filename='js/Tel_Page.js') }}"></script>
+{% endblock %} {# form #}

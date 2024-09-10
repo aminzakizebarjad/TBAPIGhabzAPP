@@ -16,8 +16,7 @@ def hello_world():  # put application's code here
 @ghabz_bp.route('/chart')
 def chart():
 
-    return render_template("Tel_Page2.html")
-
+    return render_template("Chart_Page.html")
 
 
 @ghabz_bp.route('/isAlive')
@@ -37,10 +36,18 @@ def calculate_meter():
 
     return render_template("Tel_Page.html")
 
+# from tb_rest_client.rest_client_ce import Tenant
+# @ghabz_bp.route('/create_tenant/<tenant_name>')
+# def create_tenant(tenant_name):
+#     rest_client = RestClientCE(base_url="https://tb2.thingsware.cloud")
+#     rest_client.login(username="sysadmin@thingsboard.org", password="@bi#Sim1403Negar#")
+#     tenant = Tenant(title=tenant_name, name=tenant_name, email="example@example.com")
+#     rest_client.save_tenant(tenant)
+#     return 'done'
 
 from .APITB import wholeKeeeper,  base_url, username, password, RestClientCE, decor_get_nearest_time_epoch, get_device_entity_by_name
-@ghabz_bp.post('/meter_name_API')
-def meter_name_API():
+@ghabz_bp.post('/get_meter_name_API')
+def get_meter_name_API():
     meter_kind = request.form.get('meterKind')
     return jsonify(wholeKeeeper[meter_kind])
 
@@ -545,10 +552,11 @@ def get_all_meter_data_API():
         else:
             all_meter_data_return_dict.update({'error-stop-clock': True})
 
+    from .APITB import epochDistanceToCheck, maxBoundaryTSRetry
+
     # see if the Dates are valid
     start_epoch, start_date_obj = jalali_string_to_time(start_time)
     stop_epoch, stop_date_obj = jalali_string_to_time(stop_time)
-    pre_start_epoch_ms = (start_epoch - 86400000)*1000
 
     print('start epoch bef:', start_epoch)
     if not start_epoch == None:
@@ -578,6 +586,7 @@ def get_all_meter_data_API():
     all_meter_data_return_dict.update({'error-time-seq': None})
     time_approved = False
     if ( not start_epoch == None) and ( not stop_epoch == None):
+        pre_start_epoch_ms = (start_epoch - maxBoundaryTSRetry * 60 * 60) * 1000
         if (start_epoch > stop_epoch):
             print(start_epoch, stop_epoch, )
             # meter_data_return_dict.update({'error-time': 'تاریخ ابتدا جلوتر از تاریخ انتها است.'})
@@ -585,73 +594,83 @@ def get_all_meter_data_API():
         else:
             time_approved = True
 
-
+    print('time_approved',time_approved)
 #changed_updated_form
     meter_name_approved = None
     from .APITB import electricityKeeper, waterKeeper, gasKeeper
     DictData = {}
-    for meter_info in wholeKeeeper.get(meter_kind).values():
-        print("meter_info:")
-        print(meter_info)
-        meter_name_approved = meter_info
-    # start to query
+    if(not meter_kind_approved == None):
+        for meter_info in wholeKeeeper.get(meter_kind).values():
+            print("meter_info:")
+            print(meter_info)
+            meter_name_approved = meter_info
+        # TODO: check why we have negative data in a table
+        # start to query
+
+            data = {'available': False}
+            all_meter_data_return_dict.update({'error-time-start-avlbl': None})
+            all_meter_data_return_dict.update({'error-time-stop-avlbl': None})
+
+            if (not meter_kind_approved == None) \
+                    and (not meter_name_approved == None) \
+                    and (time_approved == True):
+
+                #get nearest data to start epoch
+
+                time_in_data_available_start = start_epoch * 1000
+                if time_in_data_available_start == 0:
+                    all_meter_data_return_dict.update({'error-time-start-avlbl': True})
+
+                # get nearest data to stop epoch
+                time_in_data_available_stop = stop_epoch*1000
+                if time_in_data_available_stop == 0:
+                    all_meter_data_return_dict.update({'error-time-stop-avlbl': True})
+
+                deviceEntity = get_device_entity_by_name(restClient=rest_client, deviceName=meter_name_approved[1])
+                data_start = rest_client.get_timeseries(entity_id=deviceEntity, keys=meter_name_approved[2],
+                                                        start_ts=pre_start_epoch_ms,
+                                                        end_ts=time_in_data_available_start)
+                print(data_start)
+                data_end = rest_client.get_timeseries(entity_id=deviceEntity, keys=meter_name_approved[2],
+                                                      start_ts=time_in_data_available_start,
+                                                      end_ts=time_in_data_available_stop)
+                print(data_end)
 
 
-        data = {'available': False}
-        all_meter_data_return_dict.update({'error-time-start-avlbl': None})
-        all_meter_data_return_dict.update({'error-time-stop-avlbl': None})
+                if clk_EN == True:
+                    ts_distance = 60 * 1000 # when using clock, check in one minute distance
+                else:
+                    ts_distance = maxBoundaryTSRetry * 60 * 60 ** 1000  # when not using clock, check in 12 ours distance
 
-        if (not meter_kind_approved == None) \
-                and (not meter_name_approved == None) \
-                and (time_approved == True):
+                if not (is_empty_dict(data_end) or is_empty_dict(data_start)):  # check if data is available in such epochs
+                    data_dict_start = data_start.get(meter_name_approved[2])[0]
+                    data_dict_end = data_end.get(meter_name_approved[2])[0]
+                    data_ts_start = data_start.get(meter_name_approved[2])[0].get('ts')
+                    data_ts_end = data_end.get(meter_name_approved[2])[0].get('ts')
 
-            #get nearest data to start epoch
-            from .APITB import epochDistanceToCheck, maxBoundaryTSRetry
+                    if(time_in_data_available_start-ts_distance<data_ts_start and data_ts_start<time_in_data_available_start+ts_distance):
 
-            if clk_EN == True:
-                epochDistanceToCheck = 1  # 1 minutes each query
-                maxBoundaryTSRetry = .1  # .1*60 = 6 minutes
-
-            print('maxBoundaryTSRetry, ',epochDistanceToCheck, maxBoundaryTSRetry)
-
-            time_in_data_available_start = start_epoch * 1000
-            if time_in_data_available_start == 0:
-                all_meter_data_return_dict.update({'error-time-start-avlbl': True})
-
-            # get nearest data to stop epoch
-            time_in_data_available_stop = stop_epoch*1000
-            if time_in_data_available_stop == 0:
-                all_meter_data_return_dict.update({'error-time-stop-avlbl': True})
-
-            deviceEntity = get_device_entity_by_name(restClient=rest_client, deviceName=meter_name_approved[1])
-            data_start = rest_client.get_timeseries(entity_id=deviceEntity, keys=meter_name_approved[2],
-                                                    start_ts=pre_start_epoch_ms,
-                                                    end_ts=time_in_data_available_start)
-            data_end = rest_client.get_timeseries(entity_id=deviceEntity, keys=meter_name_approved[2],
-                                                  start_ts=time_in_data_available_start,
-                                                  end_ts=time_in_data_available_stop)
-
-            if not (is_empty_dict(data_end) or is_empty_dict(data_start)):  # check if data is available in such epochs
-                data_start_decode = float(data_start.get(meter_name_approved[2])[0].get('value'))
-                data_end_decode = float(data_end.get(meter_name_approved[2])[0].get('value'))
-                data = {}
-                data.update({'available': True})
-                if meter_kind == 'water':
-                    data.update({"telemetry-diff": round(data_end_decode-data_start_decode,3)})
-                    # print(data_end.get())
-                    data.update({'unit': 'متر مکعب'})
-                elif meter_kind == 'electricity':
-                    data.update({"telemetry-diff": round((data_end_decode - data_start_decode)*meter_name_approved[3],3)})
-                    # print(data_end)
-                    data.update({'unit': 'کیلو وات ساعت'})
+                        data_start_decode = float(data_dict_start.get('value'))
+                        data_end_decode = float(data_dict_end.get('value'))
+                        print(round(data_end_decode-data_start_decode,3))
+                        data = {}
+                        data.update({'available': True})
+                        if meter_kind == 'water':
+                            data.update({"telemetry-diff": round(data_end_decode-data_start_decode,3)})
+                            # print(data_end.get())
+                            data.update({'unit': 'متر مکعب'})
+                        elif meter_kind == 'electricity':
+                            data.update({"telemetry-diff": round((data_end_decode - data_start_decode)*meter_name_approved[3],3)})
+                            # print(data_end)
+                            data.update({'unit': 'کیلو وات ساعت'})
 
 
-        # TODO: check the data to
+            # TODO: check the data to
 
-        print(data)
+            print(data)
 
-        DictData.update({meter_name_approved[0]: data}) # TODO: include unit and value to data
-        print('here', all_meter_data_return_dict)
+            DictData.update({meter_name_approved[0]: data}) # TODO: include unit and value to data
+            print('here', all_meter_data_return_dict)
     all_meter_data_return_dict.update({'data': DictData})
     return jsonify(all_meter_data_return_dict)
 
@@ -721,6 +740,7 @@ def get_all_charts_data_API():
 
     rest_client = RestClientCE(base_url=base_url)
     rest_client.login(username=username, password=password)
+
 
     meter_kind_approved = wholeKeeeper.get(meter_kind)
     if meter_kind_approved:

@@ -35,12 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let myChart;
 
-    function hideDynamicText() {
-        errorDiv.hidden = true;
-        startErrorDiv.hidden = true;
-        stopErrorDiv.hidden = true;
-        dataDive.hidden = true;
-    }
+
 
     const errorDiv = document.getElementById("error-division");
     const startErrorDiv = document.getElementById("error-start-time-division");
@@ -66,41 +61,28 @@ document.addEventListener("DOMContentLoaded", function () {
     const spinner = document.getElementById("spinner");
     var clockEN = false;
 
-    meterName.hidden = true;
-    startClockDiv.hidden = true;
-    stopClockDiv.hidden = true;
-    allmeterplacesTable.hidden = true;
 
+    function hideDynamicText() {
+        errorDiv.hidden = true;
+        startErrorDiv.hidden = true;
+        stopErrorDiv.hidden = true;
+        dataDive.hidden = true;
+    }
 
-    // // uncomment the code below for a simple chart, you should return labels and data from backend code
-    // scripts.js
-    //
-    // Data for the chart
-    // const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-    // const data = {
-    //     labels: labels,
-    //     datasets: [{
-    //         label: 'My First dataset',
-    //         backgroundColor: 'rgb(75, 192, 192)',
-    //         borderColor: 'rgb(75, 192, 192)',
-    //         data: [0, 10, 5, 2, 20, 30, 45],
-    //     }]
-    // };
-    //
-    // // Configuration for the chart
-    // const config = {
-    //     type: 'line',
-    //     data: data,
-    //     options: {}
-    // };
-    //
-    // // Render the chart
-    // window.onload = function() {
-    //     const ctx = document.getElementById('myLineChart').getContext('2d');
-    //     new Chart(ctx, config);
-    // };
-
-
+    function setTableHead(){
+        if(meterKind.value == "water")
+            heading2.innerHTML = ` مقدار مصرفی (متر مکعب)`;
+        else if(meterKind.value == "electricity")
+            heading2.innerHTML = ` مقدار مصرفی (کیلو وات ساعت)`;
+        else if(meterKind.value == "gas")
+            heading2.innerHTML = ` مقدار مصرفی (متر مکعب)`;
+    }
+    function pageInit(){
+        meterName.hidden = true;
+        startClockDiv.hidden = true;
+        stopClockDiv.hidden = true;
+        allmeterplacesTable.hidden = true;
+    }
     function enableClock() {
         startDataDesc.hidden = true;
         stopDataDesc.hidden = true;
@@ -108,7 +90,6 @@ document.addEventListener("DOMContentLoaded", function () {
         stopClockDiv.hidden = false;
         clockEN = true;
     }
-
     function disableClock() {
         startDataDesc.hidden = false;
         stopDataDesc.hidden = false;
@@ -116,6 +97,8 @@ document.addEventListener("DOMContentLoaded", function () {
         stopClockDiv.hidden = true;
         clockEN = false;
     }
+
+    pageInit();
 
     clockCheckBox.addEventListener("change", function () {
         if (clockCheckBox.checked) {
@@ -168,13 +151,8 @@ document.addEventListener("DOMContentLoaded", function () {
             myChart.destroy();
         }
 
-        if(meterKind.value == "water")
-            heading2.innerHTML = ` مقدار مصرفی (متر مکعب)`;
-        else if(meterKind.value == "electricity")
-            heading2.innerHTML = ` مقدار مصرفی (کیلو وات ساعت)`;
-        else if(meterKind.value == "gas")
-            heading2.innerHTML = ` مقدار مصرفی (متر مکعب)`;
         console.log(meterKind.value);
+        setTableHead();
         hideDynamicText();
         const meterNameSelect = document.getElementById("meter_place_selection");
 
@@ -182,6 +160,7 @@ document.addEventListener("DOMContentLoaded", function () {
             meterNameSelect.remove(1);
         }
 
+        // check if one of water,electricity or gas kind is chosen then enable the meter name option field and fill it by meter_name_API_url API
         if (meterKind.value === "None") {
             meterNameSelect.disabled = true;
         } else {
@@ -201,6 +180,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    // submit data and get all data from get_meter_data_API_url API
     submitButt.addEventListener("click", function () {
         submitButt.hidden = true;
         spinner.hidden = false;
@@ -284,6 +264,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     dataDive.hidden = false;
                     dataDive.innerText = `مقدار مصرفی در این بازه ${avlbData["telemetry-diff"]} ${avlbData["unit"]} می باشد. `;
                 }
+
+                // charts only when singlechoosingCheckBox.checked
                 // Update chart data
                 var chartneeded = response['data_daybyday']
                 var chartneeded2 = response['days_separated']
@@ -422,6 +404,8 @@ document.addEventListener("DOMContentLoaded", function () {
             }).catch(e => {
                 console.log(e);
             });
+
+        // when singlechoosingCheckBox not checked only show commulative table from all meters
         } else {
             formData.append("meterKind", meterKind.value);
             formData.append("startTime", startTime.value);
@@ -452,42 +436,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 } else if (response["error-time-seq"]) {
                     errorDiv.hidden = false;
                     errorDiv.innerText = "تاریخ انتها عقب تر از تاریخ ابتدا می باشد!";
-                } // else if (!response["isAlive"]) {
-                //     errorDiv.hidden = false;
-                //     errorDiv.innerText = "دستگاه مورد نظر فعال نیست، پشتیبانی را خبر کنید.";
-                // }
-                //
-                // if (response["error-time-start-avlbl"]) {
-                //     startErrorDiv.hidden = false;
-                //     startErrorDiv.innerText = "در تاریخ ابتدا داده ای وجود ندارد.";
-                // } else if (response["error-start-clock"]) {
-                //     startErrorDiv.hidden = false;
-                //     startErrorDiv.innerText = "ساعت ابتدا صحیح وارد نشده است. پیشفرض 12 بامداد انتخاب شد.";
-                // }
-                //
-                // if (response["error-time-stop-avlbl"]) {
-                //     stopErrorDiv.hidden = false;
-                //     stopErrorDiv.innerText = "در تاریخ انتها داده ای وجود ندارد.";
-                // } else if (response["error-stop-clock"]) {
-                //     stopErrorDiv.hidden = false;
-                //     stopErrorDiv.innerText = " ساعت انتها صحیح وارد نشده است. پیشفرض 12 بامداد انتخاب شد.";
-                // }
+                }
+
                 var ndata = response['data']
                 allmeterplacesTable2.innerHTML = ''; // Clear existing rows
                 // heading2.innerHTML = '';
                 allmeterplacesTable.hidden = false;
                 allmeterplacesTable2.hidden = false;
                 for (const opt of Object.keys(ndata)) {
-                    var option2 = document.createElement("option");
-                    option2.text = opt;
-                    option2.value = opt;
-                    // console.log(opt);
+
                     var table = document.getElementById("all_meter_places_table2");
                     var row = table.insertRow();
                     var cell1 = row.insertCell(0);
                     var cell2 = row.insertCell(1);
-                    cell1.innerHTML = option2.text;
-
+                    cell1.innerHTML = opt;
 
                     const avlbData = ndata[opt]["available"];
                     // heading2.innerHTML = `(${ndata[opt]["unit"]}) مقدار مصرفی ` ;

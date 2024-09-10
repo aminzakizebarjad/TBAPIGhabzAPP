@@ -71,7 +71,7 @@ electricityKeeper = {'library':['کتابخانه', 'LIBRARY', 'M_P_0_0', 300],\
                      'aboreihan-1':['ابوریحان 1','ABOREIHAN_1', 'M_P_0_0', 500],\
                      'aboreihan-2':['ابوریحان 2','ABOREIHAN_1', 'M_P_1_0', 500],\
                      'aboreihan-3':['ابوریحان 3','ABOREIHAN_2', 'M_P_0_0', 500],\
-                     'aboreihan-4':['ابوریحان 4','ABOREIHAN_2', 'M_P_1_0', 500],\
+                     'aboreihan-4':['خوابگاه رفتاری','ABOREIHAN_2', 'M_P_1_0', 400],\
                      'indust-1': ['صنایع 1', 'ELECTRICITY_INDUSTRIAL_ENG', 'M_P_0_0', 400],\
                      'indust-2': ['صنایع 2', 'ELECTRICITY_INDUSTRIAL_ENG', 'M_P_1_0', 200],\
                      'biomedic':['مهندسی پزشکی', 'ELECTRICITY_BIOMEDICAL_ENG_1', 'M_P_0_0', 200],\

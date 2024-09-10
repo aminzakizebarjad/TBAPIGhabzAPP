@@ -1,5 +1,5 @@
 {% extends "ABI_NEGAR_TEMPLATE.html" %}
-{% block title %}کنتور های فعال {% endblock %}
+{% block title %}کنتور های فعال{% endblock %}
 
 
 {% block form %}
@@ -42,7 +42,7 @@
         </div>
 
 
-        <script>const meter_name_API_url = "{{ url_for('ghabz.meter_name_API') }}"</script>
+        <script>const meter_name_API_url = "{{ url_for('ghabz.get_meter_name_API') }}"</script>
         <script>const get_all_isAlive_data_API_url = "{{ url_for('ghabz.get_all_isAlive_data_API') }}"</script>
          <script type="text/javascript" src="{{ url_for('ghabz.static', filename='js/Is_Alive.js') }}"></script>
 

@@ -1,5 +1,5 @@
 {% extends "ABI_NEGAR_TEMPLATE.html" %}
-{% block title %}نمودار کنتور ها {% endblock %}
+{% block title %}نمودار کنتور ها{% endblock %}
 
 {% block form %}
     <form>
@@ -91,8 +91,8 @@
 	<script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
 
 
-        <script>const meter_name_API_url = "{{ url_for('ghabz.meter_name_API') }}"</script>
-        <script>const get_all_charts_data_API_url = "{{ url_for('ghabz.get_all_charts_data_API') }}"</script>
-         <script type="text/javascript" src="{{ url_for('ghabz.static', filename='js/Tel_Page2.js') }}"></script>
+    <script>const meter_name_API_url = "{{ url_for('ghabz.get_meter_name_API') }}"</script>
+    <script>const get_all_charts_data_API_url = "{{ url_for('ghabz.get_all_charts_data_API') }}"</script>
+    <script type="text/javascript" src="{{ url_for('ghabz.static', filename='js/Chart_Page.js') }}"></script>
 
 {% endblock %}
