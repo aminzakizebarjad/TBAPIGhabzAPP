@@ -39,8 +39,8 @@ def calculate_meter():
 # from tb_rest_client.rest_client_ce import Tenant
 # @ghabz_bp.route('/create_tenant/<tenant_name>')
 # def create_tenant(tenant_name):
-#     rest_client = RestClientCE(base_url="https://tb2.thingsware.cloud")
-#     rest_client.login(username="sysadmin@thingsboard.org", password="@bi#Sim1403Negar#")
+#     rest_client = RestClientCE(base_url="**")
+#     rest_client.login(username="**", password="**")
 #     tenant = Tenant(title=tenant_name, name=tenant_name, email="example@example.com")
 #     rest_client.save_tenant(tenant)
 #     return 'done'
