@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<link rel="icon" type="image/x-icon" href={{ url_for('ghabz.static', filename="/images/favicon.ico") }}>
+<title>{% block title %}{% endblock %}_ آبی نگار</title>
+<meta charset="UTF-8">
+
+<!--jquery v1 CDN-->
+{#for persian cllender#}
+<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+<!--jquery v1 CDN end-->
+
+<!-- bootstrap CDN -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<!-- bootstrap CDN end -->
+
+<!--font link nastaligh-->
+<link rel="preconnect" href="//fdn.fontcdn.ir">
+<link rel="preconnect" href="//v1.fontapi.ir">
+<link href="https://v1.fontapi.ir/css/IranNastaliq" rel="stylesheet">
+<link href="https://v1.fontapi.ir/css/Lotus" rel="stylesheet">
+<!--font link nastaligh end-->
+
+<link rel="stylesheet" href="{{ url_for('ghabz.static', filename='css/style.css') }}">
+
+{% block style %}{% endblock %}
+</head>
+
+<body>
+    <nav class="navbar navbar-default fixed-top" style="background-color: #305680; position: sticky">
+        <div  style="padding-top: 1rem;">
+            <div class="navbar-text centered-navbar-brand">
+                <a class="font-nastaligh" href="https://abinegar.com" style=" color: white; text-decoration: none;">سامانه گزارش مصرف دانشگاه صنعتی امیرکبیر</a>
+            </div>
+
+            <a class="navbar-brand" href="https://abinegar.com" style="margin-inline:auto; ">
+                <img src={{ url_for("ghabz.static", filename="/images/thingsware White.png") }} width= 18%;>
+                </a>
+
+{#            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">#}
+{#                <span class="navbar-toggler-icon"></span>#}
+{#            </button>#}
+{##}
+{#                <div class="collapse navbar-collapse" id="navbarNav" >#}
+{#                    <ul class="navbar-nav nav-tabs custom-nav-tabs ms-auto flex-row-reverse w-100">#}
+{#                        <li class="nav-item">#}
+{#                            <a class="nav-link" id="nav-ghabz" aria-current="page" href="{{ url_for('ghabz.hello_world') }}" >قبض</a>#}
+{#                            </li>#}
+{#                        <li class="nav-item">#}
+{#                            <a class="nav-link" id="nav-chart" href="{{ url_for('ghabz.chart') }}" >نمودار</a>#}
+{#                            </li>#}
+{#                        <li class="nav-item">#}
+{#                            <a class="nav-link" id="nav-alive" href="{{ url_for('ghabz.isAlivePage') }}" >کنتورهای فعال</a>#}
+{#                            </li>#}
+{#                        </ul>#}
+{#                    </div>#}
+            </div>
+        </nav>
+
+    <div id="contentBox" style="float: left; margin-right:0px; height: 100%; width:15%; margin-bottom:0; background-color: #305680; text-align: center; color: white; font-family: Lotus, sans-serif; font-size: 1.5rem; position: fixed;">
+
+     <!-- columns divs, float left, no margin so there is no space between column, width=1/3 -->
+
+        <div id="column1" style="  width:100%; border-bottom: 1px solid wheat; padding-bottom: .5rem; padding-top: .5rem; border-top: 1px solid wheat">
+            <a class="nav-link" id="nav-ghabz" aria-current="page" href="{{ url_for('ghabz.hello_world') }}" >گزارش مصرف</a>
+        </div>
+
+        <div id="column2" style=" width:100%; border-bottom: 1px solid wheat; margin-top: 0.5rem; padding-bottom: .5rem; ">
+            <a class="nav-link" id="nav-chart" href="{{ url_for('ghabz.chart') }}" >نمودار</a>
+        </div>
+
+        <div id="column3" style=" width:100%; border-bottom: 1px solid wheat; margin-top: 0.5rem; padding-bottom: .5rem; ">
+            <a class="nav-link" id="nav-alive" href="{{ url_for('ghabz.isAlivePage') }}" >کنتورهای فعال</a>
+        </div>
+
+
+        <div id="column4" style=" width:100%; border-top: 1px solid aqua; margin-bottom: 0; padding-top: .25rem; bottom: 5rem;  position:absolute ">
+            v 0.4.0
+        </div>
+
+        </div>
+
+    <div style="margin-left: 15%">
+        {% block form %}
+        {% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    {% block jsScript %}
+    {% endblock %}
+
+    <div style="position: fixed; bottom: 0px; right: 10px; color: darkblue; text-align: center">
+        <div>
+        Metering Report
+            </div>
+        <div>
+        v 0.4.0
+            </div>
+        <div>
+        Abinegar Co.
+            </div>
+    </div>
+    </body>
+

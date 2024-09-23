@@ -36,6 +36,9 @@ def calculate_meter():
 
     return render_template("Tel_Page.html")
 
+@ghabz_bp.get('/test_sidebar')
+def test_sidebar():
+    return render_template("sidebar_tst.html")
 # from tb_rest_client.rest_client_ce import Tenant
 # @ghabz_bp.route('/create_tenant/<tenant_name>')
 # def create_tenant(tenant_name):
