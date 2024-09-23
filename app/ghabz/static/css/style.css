@@ -18,6 +18,15 @@
       order: 1; /* Ensure toggler is on the left */
     }
 
+    .navbar-nav{
+        border-width: .2rem;
+        border-bottom-color: wheat;
+    }
+    .navbar{
+        border-width: .2rem;
+        border-bottom-color: wheat;
+    }
+
     .custom-nav-tabs .nav-link {
       margin-right: .5rem;
       border-color: #97e1ef; /* Change border color of the tabs */
@@ -273,6 +282,7 @@
         gap: 15px; /* Gap between the squares */
         justify-items: center;
         display: none; /* Initially hidden */
+
     }
 
     .navigation-bar {

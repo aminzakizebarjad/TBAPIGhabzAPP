@@ -10,9 +10,10 @@ for the project to work you need to create a Ghabz.env file that has a
 specific configuration like below, unless no services will be created.  
 
 ```
-base_url=http://172.20.2.74    
-SCRIPT_NAME=/Ghabz  
+base_url= 
 yourThingsBoardUser=
 yourThingsBoardPass=
 ```
-this project 
+avoid using loopback IP address at base_url
+if your website has the ssl available never foret to add https:// at the begining.  
+There is no need to enter these options in qoute. 
