@@ -1,0 +1,321 @@
+{% extends "sidebar_tst.html" %}
+{% block title %}هوش مصنوعی{% endblock %}
+
+{% block style %}
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
+
+    .wrapper {
+        display: flex;
+        flex-direction: column;
+        min-height: 85vh;
+    }
+
+    main {
+        flex: 1;
+    }
+
+    /* Floating menu styles */
+    .floating-menu {
+        position: absolute;
+        top: 85px;
+        right: 20px;
+        z-index: 1000;
+    }
+
+    .floating-menu button {
+        padding: 10px 15px;
+        border-radius: 5px;
+    }
+
+    .menu-options {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 0;
+        background-color: #305680;
+        border-radius: 5px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        padding: 10px;
+        min-width: 150px;
+    }
+
+    .floating-menu.show .menu-options {
+        display: block;
+        transform: translateX(0);
+    }
+
+    .floating-menu .menu-options {
+        transform: translateX(100%);
+    }
+
+    /* Button styling */
+    .menu-options button {
+        display: block;
+        width: 100%;
+        margin: 5px 0;
+    }
+
+    /* Smaller meter selector */
+    #meterSelect {
+        width: 200px;
+    }
+
+    /* Loading indicator styles */
+    #loading {
+        display: none; /* Hidden by default */
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        font-size: 20px;
+        color: #305680;
+    }
+
+    #plotArea {
+        display: flex;
+        flex-direction: column; /* Stack vertically */
+        align-items: center;    /* Center horizontally */
+        margin: 0 auto;        /* Center the plot area itself */
+    }
+
+</style>
+{% endblock %}
+
+{% block form %}
+<div class="wrapper font-nazanin">
+    <header class="text-center header-title">
+        <h2>اطلاعات مصرف - دانشگاه امیرکبیر</h2>
+    </header>
+    <main class="text-center">
+        <div class="container">
+            <!-- Placeholder for Plotting -->
+            <div id="plotArea" class="mt-4">
+                <canvas id="one_week_chart" width="1000" height="400"></canvas> <!-- Adjusted size -->
+                <br>
+                <br>
+                <canvas id="one_month_chart" width="1000" height="400"></canvas>
+                <!-- <canvas id="peakHoursChart" width="400" height="200"></canvas> -->
+            </div>
+            <!-- Loading indicator -->
+            <!-- <div id="loading" >Loading...</div>  -->
+            <div  id="loading" class="spinner-grow" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+        </div>
+    </main>
+    <footer class="text-center mt-4">
+        <p>&copy; 2024 Abinegar Co</p>
+    </footer>
+</div>
+
+<!-- Floating Menu -->
+<div class="floating-menu font-nazanin" id="floatingMenu">
+    <button class="btn btn-primary" onclick="toggleMenu()">ابزارها</button>
+    <div class="menu-options">
+        <button class="btn btn-primary" onclick="getAllMetersData('NoMeterage')">مصرف برق کل</button>
+        <button class="btn btn-primary" onclick="getAllMetersData('Meterage')">سرانه مصرف برق</button>
+        <!-- <button class="btn btn-primary" onclick="getAllMetersData()">Get All Meters Data</button> -->
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<script>
+    function toggleMenu() {
+        $('#floatingMenu').toggleClass('show');
+    }
+
+    // Close the menu if clicking outside of it
+    $(document).click(function(event) {
+        var $target = $(event.target);
+        if (!$target.closest('#floatingMenu').length && $('#floatingMenu').hasClass('show')) {
+            $('#floatingMenu').removeClass('show');
+        }
+    });
+
+    function getAllMetersData(kind) {
+        console.log("Sent request to get all the data");
+        console.log(kind)
+        $('#loading').show(); // Show loading indicator
+
+        $.get(`/api/all_meters_data?time_required=${kind}`, function(data) {
+            console.log(data);
+            
+            // Hide loading indicator after data is received
+            $('#loading').hide(); 
+
+            // Assuming data is an array of objects
+            plotWeekData(data);
+            plotMonthData(data)
+            //plotPeakHours(data);
+        }).fail(function() {
+            $('#loading').hide(); // Hide loading indicator
+            alert('Error fetching data. Please try again.');
+        });
+    }
+
+    let one_week_chart; // Declare chart variable outside the function
+    let one_month_chart;
+    function plotWeekData(data) {
+        const labels = data.map(item => item.meter_name);
+        const week_data = data.map(item => item.one_week);
+        console.log(week_data)
+        
+        const ctx = document.getElementById('one_week_chart').getContext('2d');
+
+        // Check if the chart already exists and destroy it
+        if (one_week_chart) {
+            one_week_chart.destroy();
+        }
+        
+        one_week_chart = new Chart(ctx, {
+            type: 'doughnut', // pie
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'مصرف برق یک هفته',
+                    data: week_data,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: false,
+                plugins: {
+                    legend: {
+                        position: 'left',
+                    },
+                    title: {
+                        display: true,
+                        text: 'مصرف کلی برق ساختمان ها در یک هفته اخیر',
+                        align:'center',
+                        fullSize:'true',
+                        position:'top',
+                        padding:10
+                    }
+                }
+            }
+        });
+    }
+
+    function plotMonthData(data) {
+        const labels = data.map(item => item.meter_name);
+        const month_data = data.map(item => item.one_month);
+        console.log(month_data)
+        
+        const ctx = document.getElementById('one_month_chart').getContext('2d');
+
+        // Check if the chart already exists and destroy it
+        if (one_month_chart) {
+            one_month_chart.destroy();
+        }
+        
+        one_month_chart = new Chart(ctx, {
+            type: 'doughnut', // pie
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'مصرف برق ماه اخیر',
+                    data: month_data,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: false,
+                plugins: {
+                    legend: {
+                        position: 'left',
+                    },
+                    title: {
+                        display: true,
+                        text: 'مصرف کلی برق ساختمان ها در یک ماه اخیر',
+                        align:'center',
+                        fullSize:'true',
+                        position:'top',
+                        padding:10
+                    }
+                }
+            }
+        });
+    }
+
+    function plotPeakHours(data) {
+        console.log('Peak hour data')
+        console.log(data)
+        // Assuming data contains a peakHours object for each meter
+        const labels = Object.keys(data[0].peak_hours);        
+        //const labels = data.map(item => item.peak_hours);
+        console.log(labels)
+
+        const datasets = data.map(item => ({
+            label: item.meter_name,
+            data: item.peak_hours,
+            borderColor: 'rgba(75, 192, 192, 1)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            fill: true
+        }));
+        //console.log(datasets)
+
+        const ctx = document.getElementById('peakHoursChart').getContext('2d');
+        const peakHoursChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Peak Hours of Consumption'
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+{% endblock %}

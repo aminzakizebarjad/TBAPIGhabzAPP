@@ -1,0 +1,20 @@
+
+#====================================================================================================
+Trning strated at :2024_10_19__18_56_12
+trainlosses=[0.007975148037075996] ,vallosses=[0.02233162432853335]
+LSTM(
+  (lstm): LSTM(1, 4, batch_first=True)
+  (fc): Linear(in_features=4, out_features=1, bias=True)
+)
+Number of parameters: 117
+
+
+#====================================================================================================
+Trning strated at :2024_10_19__18_56_12
+trainlosses=[0.007975148037075996, 0.029949914664030075] ,vallosses=[0.02233162432853335, 0.011974620453142763]
+LSTM(
+  (lstm): LSTM(1, 4, batch_first=True)
+  (fc): Linear(in_features=4, out_features=1, bias=True)
+)
+Number of parameters: 117
+

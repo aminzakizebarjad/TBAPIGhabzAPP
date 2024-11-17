@@ -24,6 +24,23 @@ def isAlivePage():
 
     return render_template("Is_Alive.html")
 
+@ghabz_bp.route('/AI_Dashboard')
+def AI_dashboard():
+    return render_template("AI_Dashboard.html")
+
+@ghabz_bp.route("/meters_dashboard")
+def meters_dashboard():
+    return render_template('meters_dashboard.html')
+
+@ghabz_bp.route("/model_manager")
+def model_manager():
+    return render_template('model_manager.html')
+
+@ghabz_bp.route('/general_info')
+def general_info():
+    return render_template('general_info.html')
+
+
 def is_empty_dict(d):
     return d is None or not d  # Check if dictionary is None or empty
 

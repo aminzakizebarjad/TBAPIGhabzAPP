@@ -5,25 +5,27 @@ from tb_rest_client.models.models_ce.customer_id import CustomerId
 import logging
 from typing import List, Dict, Optional
 import os
+from dotenv import load_dotenv
 # API Section
+
+# load .env file for login information
+load_dotenv()
 
 # ThingsBoard REST API URL
 base_url = os.getenv("base_url", "http://172.20.2.74")
 # Default Tenant Administrator credentials
 username = os.getenv("yourThingsBoardUser")
 password = os.getenv("yourThingsBoardPass")
+
 pageSizeParameter = 10
 aliveMinutesParameters = 20  # minutes until we say one device is not active
 epochDistanceToCheck = 15  # minutes from base epoch of a day to chech for data must be less  maxBoundaryTSRetry in minutes
 maxBoundaryTSRetry = 12 # hours away from 12 A.M. to check if data exists can be fraction of hour
-# print(base_url+APILogin)
-# x = APIPost(url=base_url+APILogin, json=JsonLogin, headers=HeaderLogin)
-# print(x.json())
+
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(levelname)s - %(module)s - %(lineno)d - %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S')
 
-# print(int(time.time()))
 # TODO: use the stopped and logged_in attributes from RestClientCE to check the connectivity
 # the dictionary to hold the gateway names, the number of meters connected to them and the value they must query
 waterKeeper = {'station':['استیشن','WATER_STATION','M_P_1_0_frwd'],\

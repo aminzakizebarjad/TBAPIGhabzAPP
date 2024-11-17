@@ -1,0 +1,178 @@
+{% extends "sidebar_tst.html" %}
+{% block title %}هوش مصنوعی{% endblock %}
+
+{% block style %}
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
+
+    .wrapper {
+        display: flex;
+        flex-direction: column;
+        min-height: 85vh; /* Make the wrapper at least full height of the viewport */
+    }
+
+    main {
+        flex: 1; /* Allow the main content to expand */
+    }
+
+     /* Floating menu styles */
+    .floating-menu {
+        position: absolute; /* Keep position absolute */
+        top: 85px; /* Position below the navbar */
+        right: 20px; /* Align it to the right */
+        z-index: 1000;
+    }
+
+    .floating-menu button {
+        padding: 10px 15px; /* Button padding */
+        border-radius: 5px; /* Rounded corners */
+    }
+
+    .menu-options {
+        display: none; /* Hide options by default */
+        position: absolute; /* Positioning for dropdown */
+        right: 0; /* Align options to the right of the button */
+        top: 0; /* Position options at the same height */
+        background-color: #305680; /* Background color */
+        border-radius: 5px; /* Rounded corners */
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease; /* Animation for opening */
+        white-space: nowrap; /* Prevent line breaks */
+        padding: 10px; /* Padding for menu options */
+        min-width: 150px; /* Minimum width for the menu */
+    }
+
+    .floating-menu.show .menu-options {
+        display: block; /* Show options when menu is active */
+        transform: translateX(0); /* Reset transform */
+    }
+
+    .floating-menu .menu-options {
+        transform: translateX(100%); /* Initially hide off-screen */
+    }
+
+    /* Button styling */
+    .menu-options button {
+        display: block; /* Stack buttons vertically */
+        width: 100%; /* Full width of menu */
+        margin: 5px 0; /* Spacing between buttons */
+    }
+
+    /* Smaller meter selector */
+    #meterSelect {
+        width: 200px; /* Compact width */
+    }
+
+    #loadingSpinner {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1001; /* Ensure it's on top */
+    }
+    
+</style>
+{% endblock %}
+
+{% block form %}
+<div class="wrapper">
+    <header class="text-center header-title">
+        <h2>مدیریت مدل ها </h2>
+    </header>
+    <main class="text-center">
+        <div class="container">
+            <!-- Meter Selection -->
+            <div class="mb-4">
+                <h3>کنتور مد نظر را انتخاب کنید</h3>
+                <select class="form-control" id="meterSelect">
+                    <option value="">-- Choose a Meter --</option>
+                    <option value="01_Library">01_Library</option>
+                    <!-- <option value="02_Lib_Farabi_Sports">02_Lib_Farabi_Sports</option> -->
+                    <option value="03_Farabi">03_Farabi</option>
+                    <option value="04_Sports_Complex">04_Sports_Complex</option>
+                    <option value="05_Apa_TarbiatBadany">05_Apa_TarbiatBadany</option>
+                    <option value="06_Civil_Eng_1">06_Civil_Eng_1</option>
+                    <option value="07_Civil_Eng_2">07_Civil_Eng_2</option>
+                    <option value="08_Aerospace">08_Aerospace</option>
+                    <option value="09_Mathematics">09_Mathematics</option>
+                    <option value="10_Textile_Eng_Transformer1">10_Textile_Eng_Transformer1</option>
+                    <option value="11_Copmuter_Eng_2">11_Copmuter_Eng_2</option>
+                    <option value="12_Computer_Eng_1">12_Computer_Eng_1</option>
+                    <option value="13_Behdari">13_Behdari</option>
+                    <option value="14_Chemical_Eng">14_Chemical_Eng</option>
+                    <option value="15_Polymer">15_Polymer</option>
+                    <!-- <option value="Mineral_Eng">Mineral Eng</option> -->
+                    <option value="16_Metallurgy">16_Metallurgy</option>
+                    <option value="17_Informatic">17_Informatic</option>
+                    <option value="18_Mineral_Eng">18_Mineral_Eng</option>
+                    <option value="19_Installations_Dorms">19_Installations_Dorms</option>
+                    <option value="20_Maritime_Eng">20_Maritime_Eng</option>
+                    <option value="21_Aboreyhan_Pump">21_Aboreyhan_Pump</option>
+                    <option value="22_Pump_Station">22_Pump_Station3</option>
+                    <option value="23_Aboreyhan_1">23_Aboreyhan_1</option>
+                    <option value="24_Aboreyhan_2">24_Aboreyhan_2</option>
+                    <option value="25_Aboreyhan_3">25_Aboreyhan_3</option>
+                    <option value="26_Raftari_Dorm">26_Raftari_Dorm</option>
+                    <option value="27_Industrial_Eng_1">27_Industrial_Eng_1</option>
+                    <option value="28_Industrial_Eng_2">28_Industrial_Eng_2</option>
+                    <option value="30_Pump_BioMedical">30_Pump_BioMedical</option>
+                    <option value="31_Management_IndependentChem">31_Management_IndependentChem</option>
+                    <option value="32_FanavariBuilding1_EbnSina">32_FanavariBuilding1_EbnSina</option>
+                    <option value="33_Nahad">33_Nahad</option>     
+
+                    <!-- Add more meters as needed -->
+                </select>
+            </div>
+
+            <!-- Placeholder for Plotting -->
+            <div id="plotArea" class="mt-4">
+                <canvas id="dataChart" width="400" height="200"></canvas>
+                <!-- Spinner for loading state -->
+                <div id="loadingSpinner" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="text-center mt-4">
+        <p>&copy; 2024 Abinegar Co</p>
+    </footer>
+</div>
+
+<div class="floating-menu" id="floatingMenu">
+    <button class="btn btn-primary" onclick="toggleMenu()">ابزارها</button>
+    <div class="menu-options">
+        <button class="btn btn-primary" onclick="">آموزش مدل</button>
+        <button class="btn btn-info" onclick="">تست خروجی مدل</button>
+        <!-- Add more options as needed -->
+    </div>
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+
+<script>
+    function toggleMenu() {
+        $('#floatingMenu').toggleClass('show');
+    }
+
+    // Close the menu if clicking outside of it
+    $(document).click(function(event) {
+        var $target = $(event.target);
+        if (!$target.closest('#floatingMenu').length && $('#floatingMenu').hasClass('show')) {
+            $('#floatingMenu').removeClass('show');
+        }
+    });
+</script>
+
+
+<script type="text/javascript" src="{{ url_for('ghabz.static', filename='js/meters_dashboard.js') }}"></script>
+
+{% endblock %}

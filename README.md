@@ -1,27 +1,33 @@
-# Telemetry Ticket Project
-This is a project around thingsboard python REST API module  
- 
-We will create a Flask project for handling a web UI.  
+# AbinegarProject - Ghabz/AI Dahsboard
+## Summary
+This project is a fork of another project which was an IOT Dashboard.
+We added new AI and Deep Learning capabilities to this dashboard for further use.
+The Main project can be found [here](https://github.com/aminzakizebarjad/TBAPIGhabzAPP)
 
-In this Web UI we first ask for the 
+## Instructions
+The needed instruction to run the dashboard is explained in this section
 
+### python venv
+Create a python virtual environment then install the needed libraries inside requirement.txt file
 
-for the project to work you need to create a Ghabz.env file that has a
-specific configuration like below, unless no services will be created.  
+### make .env file
+To make use of the data, you need to have the credentials.
+Make a .env file at the root of the project repository and writ the following inside it:
+```
+base_url= your_url #https://tb1.thingsware.cloud
+yourThingsBoardUser= your_username
+yourThingsBoardPass= your_password
+```
 
+### Run 
+To run the project do not use the run.py or server.py 
+Instead head to app folder and run the **main.py**
+
+Example, If you are at the root of repositiry: 
 ```
-base_url= 
-yourThingsBoardUser=
-yourThingsBoardPass=
+python app/main.py
 ```
-Avoid using loopback IP address at base_url.  
-If your website has the ssl available never forget to add https:// at the begining.  
-There is no need to enter these options in qoute.  
-If already there is a proxy set up for your service, then only bring on the ghabz_app service
+Then you can go to the default address bellow ( if not changed ) to access the dashboard:
 ```
-docker compose up -d --build ghabz_app 
-```
-Otherwize 
-```
-docker compose up -d --build
+http://127.0.0.1:5000/ghabz
 ```

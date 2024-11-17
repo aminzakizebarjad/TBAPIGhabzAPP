@@ -1,0 +1,49 @@
+{% extends "sidebar_tst.html" %}
+{% block title %}هوش مصنوعی{% endblock %}
+
+{% block style %}
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
+    
+    .wrapper {
+        display: flex;
+        flex-direction: column;
+        min-height: 85vh; /* Make the wrapper at least full height of the viewport */
+    }
+    
+    main {
+        flex: 1; /* Allow the main content to expand */
+    }
+    
+
+</style>
+{% endblock %}
+
+
+<!-- {{ url_for('electricity_dashboard') }} -->
+
+{% block form %}
+<div class="wrapper">
+    <header class="text-center header-title">
+        <h1>داشبورد هوش مصنوعی</h1>
+    </header>
+    <main class="text-center">
+        <div class="card bg-light shadow-sm" style="max-width: 1000px; margin: auto;">
+            <div class="card-body">
+                <a href="{{ url_for('ghabz.general_info') }}" class="btn btn-info btn-lg mx-1">اطلاعات کلی</a>
+                <a href="{{ url_for('ghabz.meters_dashboard') }}" class="btn btn-primary btn-lg mx-1">کنتورها و پیش بینی</a>
+                <!-- <a href="{{ url_for('ghabz.model_manager') }}" class="btn btn-info btn-lg mx-1">مدیریت مدل ها</a> -->
+            </div>
+        </div>
+
+        
+    </main>
+
+    <footer class="text-center mt-4">
+        <p>&copy; 2024 Abinegar Co</p>
+    </footer>
+</div>
+{% endblock %}

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Prediction</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        #loading {
+            display: none;
+            margin: 20px 0;
+        }
+        .loader {
+            border: 8px solid #f3f3f3; /* Light grey */
+            border-top: 8px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 2s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #predictionsChart {
+            width: 100%; /* Full width */
+            height: 600px; /* Fixed height for better visualization */
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+
+<h1>AI Predictor</h1>
+
+<form method="POST">
+    <label for="phase">Phase:</label>
+    <select id="phase" name="phase">
+      <option value="train">train</option>
+      <option value="test">teset</option>
+      <!-- Add more phases if needed -->
+    </select>
+
+
+    <br/><br/>
+    
+    <label for="buldingname">Bulding Name:</label>
+    <select id="buldingname" name="buldingname">
+        <option value="01_Library">01_Library</option>
+        <option value="02_Lib_Farabi_Sports">02_Lib_Farabi_Sports</option>
+        <option value="03_Farabi">03_Farabi</option>
+        <option value="04_Sports_Complex">04_Sports_Complex</option>
+        <option value="05_Apa_TarbiatBadany">05_Apa_TarbiatBadany</option>
+        <option value="06_Civil_Eng_1">06_Civil_Eng_1</option>
+        <option value="07_Civil_Eng_2">07_Civil_Eng_2</option>
+        <option value="08_Aerospace">08_Aerospace</option>
+        <option value="09_Mathematics">09_Mathematics</option>
+        <option value="10_Textile_Eng_Transformer1">10_Textile_Eng_Transformer1</option>
+        <option value="11_Copmuter_Eng_2">11_Copmuter_Eng_2</option>
+        <option value="12_Computer_Eng_1">12_Computer_Eng_1</option>
+        <option value="13_Behdari">13_Behdari</option>
+        <option value="14_Chemical_Eng">14_Chemical_Eng</option>
+        <option value="15_Polymer">15_Polymer</option>
+        <option value="Mineral_Eng">Mineral Eng</option>
+        <option value="16_Metallurgy">16_Metallurgy</option>
+        <option value="17_Informatic">17_Informatic</option>
+        <option value="18_Mineral_Eng">18_Mineral_Eng</option>
+        <option value="19_Installations_Dorms">19_Installations_Dorms</option>
+        <option value="20_Maritime_Eng">20_Maritime_Eng</option>
+        <option value="21_Aboreyhan_Pump">21_Aboreyhan_Pump</option>
+        <option value="22_Pump_Station">22_Pump_Station3</option>
+        <option value="23_Aboreyhan_1">23_Aboreyhan_1</option>
+        <option value="24_Aboreyhan_2">24_Aboreyhan_2</option>
+        <option value="25_Aboreyhan_3">25_Aboreyhan_3</option>
+        <option value="26_Raftari_Dorm">26_Raftari_Dorm</option>
+        <option value="27_Industrial_Eng_1">27_Industrial_Eng_1</option>
+        <option value="28_Industrial_Eng_2">28_Industrial_Eng_2</option>
+        <option value="30_Pump_BioMedical">30_Pump_BioMedical</option>
+        <option value="31_Management_IndependentChem">31_Management_IndependentChem</option>
+        <option value="32_FanavariBuilding1_EbnSina">32_FanavariBuilding1_EbnSina</option>
+        <option value="33_Nahad">33_Nahad</option>        
+    </select>
+    
+
+
+
+
+
+    <br/><br/>
+
+    <input type="submit" value="Run" id="submit-button">
+</form>
+
+<div id="loading">
+    <div class="loader"></div>
+    <p>Loading, please wait...</p>
+</div>
+
+<div id="result">
+    <p>{{ message }}</p>
+    <div id="predictionsChart"></div>
+</div>
+
+<script>
+    const form = document.querySelector('form'); // Get the form element
+    const loading = document.getElementById('loading');
+    const resultDiv = document.getElementById('result');
+
+    form.onsubmit = function() {
+        loading.style.display = 'block'; // Show loading animation
+        resultDiv.style.display = 'none'; // Hide previous results
+    };
+
+    window.onload = function() {
+        const predictions = {{ predictions | tojson }};
+        if (predictions.length > 0) {
+            plotPredictions(predictions);
+        }
+    };
+
+    function plotPredictions(predictions) {
+        const labels = predictions.map((_, index) => index + 1); // Create labels
+
+        // Create the data for the plot
+        const data = [{
+            x: labels,
+            y: predictions,
+            type: 'scatter', // Line graph
+            mode: 'lines+markers', // Show both lines and markers
+            name: 'Predictions',
+            line: { color: 'rgba(75, 192, 192, 1)', width: 2 }
+        }];
+
+        // Define layout for the plot
+        const layout = {
+            title: 'Predictions Over Time',
+            xaxis: {
+                title: 'Sample Number',
+                showgrid: true,
+                zeroline: false
+            },
+            yaxis: {
+                title: 'Prediction Value',
+                showline: true
+            },
+            margin: {
+                l: 50, r: 50, t: 50, b: 50 // Adjust margins
+            },
+            height: 600 // Height of the graph
+        };
+
+        // Render the plot
+        Plotly.newPlot('predictionsChart', data, layout);
+    }
+</script>
+
+
+</body>
+</html>

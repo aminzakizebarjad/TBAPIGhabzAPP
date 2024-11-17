@@ -3,6 +3,8 @@ import re
 from typing import Optional
 import logging
 import jdatetime
+import os
+import glob
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(levelname)s - %(module)s - %(lineno)d - %(message)s',
@@ -145,3 +147,16 @@ if __name__ == "__main__":
 
   # test jalali string to time
   print(jalali_string_to_time(""))
+
+
+def list_files_without_extension(directory):
+    # Use glob to get all files in the directory
+    files = glob.glob(os.path.join(directory, '*'))  # Adjust the pattern as needed
+    # Remove extensions and keep only file names
+    file_names_without_extension = [
+        os.path.splitext(os.path.basename(file))[0] for file in files if os.path.isfile(file)
+    ]
+    return file_names_without_extension
+    
+def file_exists(file_path):
+    return os.path.isfile(file_path)
