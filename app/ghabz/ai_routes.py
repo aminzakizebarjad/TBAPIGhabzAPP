@@ -16,6 +16,7 @@ from datetime import datetime
 from .APITB import wholeKeeeper,  base_url, username, password, RestClientCE, decor_get_nearest_time_epoch, get_device_entity_by_name
 from .util import list_files_without_extension, file_exists
 from .util import jalali_string_to_time
+from .routes import ghabz_bp
 
 # Important note: 
 # Change the way data is handled so that the real data is achieved form the server not form a csv file
@@ -56,7 +57,7 @@ local_electricityKeeper = {'01_Library':['کتابخانه', 'LIBRARY', 'M_P_0_0
                      'ghalamchi': ['خوابگاه قلمچی', 'AmirKabir_Meter_G1', 'D2f20', 60, -1]
                      }
 
-@app.route('/meters', methods=['GET'])
+@ghabz_bp.route('/meters', methods=['GET'])
 def get_meters():
     
     # Construct address of the dataset
@@ -70,7 +71,7 @@ def get_meters():
 
     return jsonify(meters)
 
-@app.route('/api/meter_data', methods=['GET'])
+@ghabz_bp.route('/api/meter_data', methods=['GET'])
 def meter_data():
     meter = request.args.get('meter')
     period = request.args.get('period')
@@ -99,7 +100,7 @@ def meter_data():
     
     return jsonify({'error': 'Invalid meter or period'}), 400
 
-# @app.route('/api/make_prediction', methods=['POST'])
+# @ghabz_bp.route('/api/make_prediction', methods=['POST'])
 # def make_prediction():
 #     # Here you would implement the logic for making predictions
 #     # For now, we'll return a dummy response
@@ -116,7 +117,7 @@ def meter_data():
 #         return jsonify({'prediction': prediction})
 #     return jsonify({'error': 'Invalid meter'}), 400
 
-@app.route('/api/make_prediction', methods=['POST'])
+@ghabz_bp.route('/api/make_prediction', methods=['POST'])
 def make_prediction():
     meter = request.args.get('meter')
     print(f'\nMeter to predict for:{meter}\n')    
@@ -145,7 +146,7 @@ def make_prediction():
         return jsonify({'error': 'Invalid meter'}), 400
 
 
-@app.route('/api/all_meters_data', methods=['GET'])
+@ghabz_bp.route('/api/all_meters_data', methods=['GET'])
 def all_meters_data():
     time_required = request.args.get('time_required')
 
@@ -369,7 +370,7 @@ aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 '''
 
 # TODO: Complete this code
-@app.route('/api/train_model', methods=['POST'])
+@ghabz_bp.route('/api/train_model', methods=['POST'])
 def train_model():
     meter = request.args.get('meter')
     print(f'\nMeter to train model on:{meter}\n')    
@@ -408,7 +409,7 @@ def change_time_to_epoch(time_str="2024-11-10 14:30:00", time_format="%Y-%m-%d %
 
 # This one works perfectly and sends realtime data to the front-end
 # TODO: Add a functionality that Looks for the last available data for each meter!
-@app.route('/api/get_meter_data_realtime')
+@ghabz_bp.route('/api/get_meter_data_realtime')
 def get_meter_data_realtime():
     from .APITB import epochDistanceToCheck, maxBoundaryTSRetry
 
@@ -509,7 +510,7 @@ def get_meter_data_realtime():
          return jsonify({'error': 'Invalid meter'}), 400
 
 
-@app.route('/api/get_30_days')
+@ghabz_bp.route('/api/get_30_days')
 def get_30_days():
     from .APITB import epochDistanceToCheck, maxBoundaryTSRetry
 
@@ -631,7 +632,7 @@ def get_30_days():
 
 # The new get data Inshalah works! 
 # Just for test purposes to get data from a time to a time
-@app.route('/AI_Elec_Get')
+@ghabz_bp.route('/AI_Elec_Get')
 def AI_Elec_Get():
     # gather form data returned from js fetch API
     # meter_kind = request.args.get('meterKind')
@@ -780,7 +781,7 @@ def AI_Elec_Get():
 
 
 
-@app.post('/AI_get_meter_data_API')
+@ghabz_bp.post('/AI_get_meter_data_API')
 def ai_get_meter_data_API():
     # gathering data for drawing charts of last day, last week and last month usage
     all_charts_data_return_dict = {}

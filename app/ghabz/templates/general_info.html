@@ -144,7 +144,7 @@
         console.log(kind)
         $('#loading').show(); // Show loading indicator
 
-        $.get(`/api/all_meters_data?time_required=${kind}`, function(data) {
+        $.get(`/ghabz/api/all_meters_data?time_required=${kind}`, function(data) {
             console.log(data);
             
             // Hide loading indicator after data is received

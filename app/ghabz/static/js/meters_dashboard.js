@@ -19,7 +19,7 @@ function plotData(period) {
     }
     jQuery.noConflict();
     // $.get(`/api/meter_data?meter=${meter}&period=${period}`, function(data) {
-    $.get(`/api/get_meter_data_realtime?meter=${meter}&period=${period}`, function(data) {
+    $.get(`/ghabz/api/get_meter_data_realtime?meter=${meter}&period=${period}`, function(data) {
         // Prepare the chart data
         const labels = data.map(item => item.datetime); // Use actual datetime from the data
         const new_data = data.map(item => item.daily_value)
@@ -84,7 +84,7 @@ function makePrediction() {
     loadingSpinner.style.display = 'block';
 
     jQuery.noConflict();
-    $.post(`/api/make_prediction?meter=${meter}`, function(data) {
+    $.post(`/ghabz/api/make_prediction?meter=${meter}`, function(data) {
         // Hide the loading spinner and re-enable the button
         loadingSpinner.style.display = 'none';
         predictionButton.disabled = false;
