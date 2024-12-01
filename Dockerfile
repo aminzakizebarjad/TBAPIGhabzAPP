@@ -26,6 +26,6 @@ RUN pip3 install -r /code/requirements.txt
 COPY ./app /code/app
 
 # run flask with gunicorn
-CMD ["gunicorn", "--conf", "app/gunicorn_conf.py", "--bind", "0.0.0.0:80", "app.main:app"]
+CMD ["gunicorn", "--conf", "app/gunicorn_conf.py", "--bind", "0.0.0.0:80", "app.app:app"]
 # run flask solely
 #CMD ["flask", "--app", "app.main:app", "run", "-p", "3000"]
