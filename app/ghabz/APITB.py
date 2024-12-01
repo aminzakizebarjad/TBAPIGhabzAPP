@@ -5,11 +5,11 @@ from tb_rest_client.models.models_ce.customer_id import CustomerId
 import logging
 from typing import List, Dict, Optional
 import os
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 # API Section
 
 # load .env file for login information
-load_dotenv()
+# load_dotenv()
 
 # ThingsBoard REST API URL
 base_url = os.getenv("base_url", "http://172.20.2.74")
