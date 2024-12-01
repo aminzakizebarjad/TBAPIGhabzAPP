@@ -17,10 +17,8 @@ jalali_core
 jdatetime
 Jinja2
 MarkupSafe
-PyJWT
-python-dateutil
 python-dotenv
 requests
 six
 urllib3
-git+https://github.com/thingsboard/thingsboard-python-rest-client
+gunicorn

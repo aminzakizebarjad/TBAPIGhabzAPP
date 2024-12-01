@@ -12,7 +12,6 @@ def home():
 
 
 
-
 # if ___main___name__ == '':
 #     app.run(debug=True)
 
