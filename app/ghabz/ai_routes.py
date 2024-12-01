@@ -238,7 +238,7 @@ def fetch_all_meters_data():
                 month_list.append(diff_one_month)
                 
                 # These two 
-                if meter_name is not '07_Civil_Eng_2' and meter_name is not '08_Aerospace': 
+                if meter_name != '07_Civil_Eng_2' and meter_name != '08_Aerospace':
                     results.append({
                         'name': meter_name_approved[0],  # Use file name (without extension) as meter name
                         'one_week': diff_one_week,
@@ -306,7 +306,7 @@ def fetch_all_meters_data_Meterage():
                 month_list.append(diff_one_month)
                 
                 # These two 
-                if meter_name is not '07_Civil_Eng_2' and meter_name is not '08_Aerospace': 
+                if meter_name != '07_Civil_Eng_2' and meter_name != '08_Aerospace':
                     if meter_name_approved[4] != -1:
                         results.append({
                             'name': meter_name_approved[0],  # Use file name (without extension) as meter name

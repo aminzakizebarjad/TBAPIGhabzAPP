@@ -1,6 +1,6 @@
 from flask import Flask
 from flask import render_template,request, jsonify
-from ghabz.routes import ghabz_bp
+from .ghabz.routes import ghabz_bp
 
 app = Flask(__name__)
 app.register_blueprint(ghabz_bp)
@@ -10,7 +10,7 @@ def home():
 
     return 'Hello, World!'
 
-from ghabz import ai_routes
+from .ghabz import ai_routes
 
 
 # if ___main___name__ == '':

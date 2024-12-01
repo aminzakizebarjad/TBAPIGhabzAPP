@@ -3,7 +3,7 @@
 #
 #ENTRYPOINT ["top", "-b"]
 # TODO: create the requirement.txt by freezing python
-FROM docker.arvancloud.ir/python:3.10-slim
+FROM ghcr.io/ledgerhq/python-base-images/python-base-images:3.8-slim-buster
 #FROM python:3.10-alpine
 
 RUN apt update
@@ -11,9 +11,17 @@ RUN apt install git -y
 
 WORKDIR /code
 
-#COPY ./requirements.txt /code/requirements.txt
-COPY ./requirements_from_source.txt /code/requirements.txt
+# pandas uses  python-dateutil=>2.9.0 , also tb-rest-client uses python-dateutil==2.5.3, we will use two req files to prevent conflicts
+# first tb-rest client must get installed with lower version dependency, then other modules in requirements.txt
+# we will encounter dependeny error but no problem
 
+# pip problem resolved in IRAN, so we will use usual requirements file instead of from source
+# from source is commented accordingly
+COPY ./requirement1.txt /code/requirement1.txt
+COPY ./requirements.txt /code/requirements.txt
+#COPY ./requirements_from_source.txt /code/requirements.txt
+
+RUN pip3 install -r /code/requirement1.txt
 RUN pip3 install -r /code/requirements.txt
 COPY ./app /code/app
 
