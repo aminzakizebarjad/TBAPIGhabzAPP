@@ -3,7 +3,7 @@
 #
 #ENTRYPOINT ["top", "-b"]
 # TODO: create the requirement.txt by freezing python
-FROM ghcr.io/ledgerhq/python-base-images/python-base-images:3.8-slim-buster
+FROM docker.arvancloud.ir/python:3.10-slim
 #FROM python:3.10-alpine
 
 RUN apt update
