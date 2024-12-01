@@ -3,10 +3,16 @@
 #
 #ENTRYPOINT ["top", "-b"]
 # TODO: create the requirement.txt by freezing python
-FROM docker.arvancloud.ir/python:3.10-slim
+#FROM docker.arvancloud.ir/python:3.10-slim
 #FROM python:3.10-alpine
+FROM ghcr.io/snakepacker/python/base
 
 RUN apt update
+
+# Install python
+RUN apt-install python3.10-minimal libpython3.10-stdlib python3.10-distutils
+
+
 RUN apt install git -y
 
 WORKDIR /code
