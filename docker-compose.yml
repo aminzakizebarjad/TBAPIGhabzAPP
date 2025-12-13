@@ -12,7 +12,7 @@ services:
       - Ghabz.env
     networks:
       - flask-app
-    container_name: ghabz-app-tb
+    container_name: meter-report-app
 
   haproxy:
     image: docker.arvancloud.ir/haproxy:latest

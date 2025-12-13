@@ -3,16 +3,22 @@
 #
 #ENTRYPOINT ["top", "-b"]
 # TODO: create the requirement.txt by freezing python
-FROM docker.arvancloud.ir/python:3.10-slim
+# no sanction
+FROM python:3.10-slim
+# sanction
+#FROM docker.arvancloud.ir/python:3.10-slim
+
 #FROM python:3.10-alpine
 
 RUN apt update
-RUN apt install git -y
+# RUN apt install git -y
 
 WORKDIR /code
 
-#COPY ./requirements.txt /code/requirements.txt
-COPY ./requirements_from_source.txt /code/requirements.txt
+# no sanction
+COPY ./requirements.txt /code/requirements.txt
+# sanction
+#COPY ./requirements_from_source.txt /code/requirements.txt
 
 RUN pip3 install -r /code/requirements.txt
 COPY ./app /code/app
