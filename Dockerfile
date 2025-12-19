@@ -4,7 +4,7 @@
 #ENTRYPOINT ["top", "-b"]
 # TODO: create the requirement.txt by freezing python
 # no sanction
-FROM python:3.10-slim
+FROM python:3.11-slim
 # sanction
 #FROM docker.arvancloud.ir/python:3.10-slim
 
