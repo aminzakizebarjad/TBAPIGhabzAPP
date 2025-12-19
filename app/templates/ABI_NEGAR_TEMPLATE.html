@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 
-<link rel="icon" type="image/x-icon" href={{ url_for('ghabz.static', filename="/images/favicon.ico") }}>
+<link rel="icon" type="image/x-icon" href={{ url_for('static', filename="/images/favicon.ico") }}>
 <title>{% block title %}{% endblock %}_ آبی نگار</title>
 <meta charset="UTF-8">
 
@@ -22,7 +22,7 @@
 <link href="https://v1.fontapi.ir/css/Lotus" rel="stylesheet">
 <!--font link nastaligh end-->
 
-<link rel="stylesheet" href="{{ url_for('ghabz.static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
 {% block style %}{% endblock %}
 </head>
@@ -35,7 +35,7 @@
     <a class="navbar-brand centered-navbar-brand font-nastaligh" href="https://abinegar.com">سامانه گزارش مصرف آبی نگار</a>
 
     <a class="navbar-brand" href="https://abinegar.com">
-    <img src={{ url_for("ghabz.static", filename="/images/cropped-logo1.jpg") }} alt="Bootstrap" width="90" height="60">
+    <img src={{ url_for("static", filename="/images/cropped-logo1.jpg") }} alt="Bootstrap" width="90" height="60">
     </a>
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,13 +45,13 @@
     <div class="collapse navbar-collapse" id="navbarNav" >
       <ul class="navbar-nav nav-tabs custom-nav-tabs ms-auto flex-row-reverse w-100">
         <li class="nav-item">
-          <a class="nav-link" id="nav-ghabz" aria-current="page" href="{{ url_for('ghabz.hello_world') }}" >قبض</a>
+          <a class="nav-link" id="nav-ghabz" aria-current="page" href="{{ url_for('hello_world') }}" >قبض</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" id="nav-chart" href="{{ url_for('ghabz.chart') }}" >نمودار</a>
+          <a class="nav-link" id="nav-chart" href="{{ url_for('chart') }}" >نمودار</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" id="nav-alive" href="{{ url_for('ghabz.isAlivePage') }}" >کنتورهای فعال</a>
+          <a class="nav-link" id="nav-alive" href="{{ url_for('isAlivePage') }}" >کنتورهای فعال</a>
         </li>
 
       </ul>
