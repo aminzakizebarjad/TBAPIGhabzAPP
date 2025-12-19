@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   ghabz_app:
-    image: telapp-slim
+    image: abi-meter-report
     build:
       context: .
       dockerfile: Dockerfile
